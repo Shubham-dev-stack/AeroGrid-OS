@@ -1,67 +1,57 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { Environment, PerspectiveCamera } from "@react-three/drei";
-import GridBackground from "./GridBackground";
+import { PerspectiveCamera } from "@react-three/drei";
+import EarthGlobe from "./EarthGlobe";
 import ModelViewer from "./ModelViewer";
 import CameraRig from "./CameraRig";
 
 export default function Scene() {
   return (
     <>
-      {/* Cinematic Perspective Camera */}
+      {/* Cinematic Camera */}
       <PerspectiveCamera
         makeDefault
         fov={45}
         near={0.1}
-        far={100}
-        position={[0.8, 0.3, 4.6]}
+        far={200}
+        position={[0, 0, 7.5]}
       />
 
-      {/* Cinematic Aerospace Studio Lighting */}
-      {/* 1. Deep Space Ambient */}
-      <ambientLight color="#0b1324" intensity={1.4} />
+      {/* Cinematic Deep Space Lighting */}
+      <ambientLight color="#060c18" intensity={1.5} />
 
-      {/* 2. Key Sun Directional Light */}
+      {/* Key Sunlight shining from top-right towards Earth & Satellite */}
       <directionalLight
-        position={[8, 12, 8]}
+        position={[14, 12, 10]}
         color="#ffffff"
-        intensity={2.8}
+        intensity={3.5}
         castShadow={false}
       />
 
-      {/* 3. Laser Cyan Accent Rim Light */}
+      {/* Laser Cyan Accent Rim Light */}
       <directionalLight
-        position={[-10, -4, -6]}
+        position={[-12, -4, -6]}
         color="#00A1FF"
-        intensity={4.5}
+        intensity={5.0}
       />
 
-      {/* 4. Mars Amber Backlight */}
+      {/* Mars Amber Subtle Accent Backlight */}
       <directionalLight
-        position={[6, -6, -5]}
+        position={[8, -8, -5]}
         color="#FC6A18"
-        intensity={2.5}
+        intensity={2.6}
       />
 
-      {/* 5. Top Zenith Atmospheric Fill */}
+      {/* Top Zenith Fill */}
       <directionalLight
-        position={[0, 15, 0]}
+        position={[0, 16, 2]}
         color="#38bdf8"
         intensity={1.0}
       />
 
-      {/* 6. Front Fill Light for High-Tech Metallic Sheen */}
-      <directionalLight
-        position={[0, 0, 10]}
-        color="#cbd5e1"
-        intensity={0.9}
-      />
-
-      {/* 3D Scene Geometry, Grid, and Camera Rig */}
       <Suspense fallback={null}>
-        <Environment preset="city" />
-        <GridBackground />
+        <EarthGlobe />
         <ModelViewer />
         <CameraRig />
       </Suspense>
