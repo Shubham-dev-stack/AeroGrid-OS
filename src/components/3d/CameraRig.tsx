@@ -5,97 +5,105 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { scrollState } from "@/lib/scrollStore";
 
-interface Waypoint {
+interface FlightWaypoint {
+  progress: number;
   position: THREE.Vector3;
   target: THREE.Vector3;
 }
 
-// 8 Waypoints choreographed for EnduroSat 1:1 scrollytelling frames
-const WAYPOINTS: Waypoint[] = [
-  // Frame 1: Hero (Right-offset 3/4 perspective)
+// Authentic EnduroSat cinematic camera flight sequence
+const CINEMATIC_WAYPOINTS: FlightWaypoint[] = [
+  // 0% (Hero): Earth horizon in bottom-left, holographic satellite in top-right
   {
-    position: new THREE.Vector3(0.8, 0.3, 4.6),
-    target: new THREE.Vector3(0.2, 0, 0),
+    progress: 0.0,
+    position: new THREE.Vector3(0.2, 0.4, 7.2),
+    target: new THREE.Vector3(0.5, 0.2, 0),
   },
-  // Frame 2: The Challenge & Solution (Slight pull-back for bold typography)
+  // 20% (The Challenge): Orbiting Earth limb
   {
-    position: new THREE.Vector3(1.2, 0.5, 5.2),
-    target: new THREE.Vector3(0.1, 0, 0),
+    progress: 0.2,
+    position: new THREE.Vector3(-0.5, 0.2, 6.9),
+    target: new THREE.Vector3(-0.1, 0.1, 0),
   },
-  // Frame 3: Two Steps Timeline (Horizontal alignment with payload bay)
+  // 40% (Two Steps): Earth centered majestically with atmospheric glow
   {
-    position: new THREE.Vector3(-0.9, -0.2, 4.4),
-    target: new THREE.Vector3(-0.1, 0, 0),
+    progress: 0.4,
+    position: new THREE.Vector3(-1.2, -1.8, 7.8),
+    target: new THREE.Vector3(-1.2, -1.8, 0),
   },
-  // Frame 4: Application / Payloads (Inspection zoom on sensor bay)
+  // 50% (In Just 6 Months): Centered on Earth as cyan timeline fills
   {
-    position: new THREE.Vector3(1.6, -0.3, 3.8),
-    target: new THREE.Vector3(0.3, -0.1, 0.3),
+    progress: 0.5,
+    position: new THREE.Vector3(-1.2, -1.8, 7.4),
+    target: new THREE.Vector3(-1.2, -1.8, 0),
   },
-  // Frame 5: In-Flight Telemetry (Left placement to make room for right HUD dock)
+  // 65% (01 Define): Cinematic atmospheric DIVE towards terrain map & coordinate grid
   {
-    position: new THREE.Vector3(-1.5, 0.2, 4.3),
-    target: new THREE.Vector3(-0.3, 0.05, 0),
+    progress: 0.65,
+    position: new THREE.Vector3(-1.2, -1.8, 5.72),
+    target: new THREE.Vector3(-1.2, -1.8, 4.82),
   },
-  // Frame 6: Mission Calculator (Centered wide orbital view framed by 8vw numbers)
+  // 85% (Cost & Constellation): Pulls back into high orbit with constellation paths
   {
-    position: new THREE.Vector3(0, 0.6, 5.6),
-    target: new THREE.Vector3(0, -0.05, 0),
+    progress: 0.85,
+    position: new THREE.Vector3(-0.4, 0.8, 8.8),
+    target: new THREE.Vector3(-0.8, -0.6, 0),
   },
-  // Frame 7: Cost of Space Data Comparison (Cinematic high-angle)
+  // 100% (Get to orbit today / Footer): High-orbit panoramic view
   {
-    position: new THREE.Vector3(0.9, 1.0, 5.0),
-    target: new THREE.Vector3(0, 0, 0),
-  },
-  // Frame 8: Footer CTA (Direct center overview)
-  {
-    position: new THREE.Vector3(0, 1.2, 4.8),
-    target: new THREE.Vector3(0, 0, 0),
+    progress: 1.0,
+    position: new THREE.Vector3(-0.6, 1.2, 8.2),
+    target: new THREE.Vector3(-0.8, -0.4, 0),
   },
 ];
 
 export default function CameraRig() {
   const { camera, pointer } = useThree();
-  const currentLookAt = useRef(new THREE.Vector3(0, 0, 0));
-  const targetCameraPos = useRef(new THREE.Vector3(0.8, 0.3, 4.6));
-  const targetLookAt = useRef(new THREE.Vector3(0.2, 0, 0));
+  const currentLookAt = useRef(new THREE.Vector3(0.5, 0.2, 0));
+  const targetCameraPos = useRef(new THREE.Vector3(0.2, 0.4, 7.2));
+  const targetLookAt = useRef(new THREE.Vector3(0.5, 0.2, 0));
 
   useFrame((_, delta) => {
     const p = Math.max(0, Math.min(1, scrollState.progress));
 
-    // Calculate segment index across the 7 transitions (8 waypoints)
-    const numSegments = WAYPOINTS.length - 1;
-    const scaledP = p * numSegments;
-    const segIndex = Math.min(Math.floor(scaledP), numSegments - 1);
-    const segProgress = scaledP - segIndex;
+    // Find the two surrounding waypoints based on exact progress
+    let prevWP = CINEMATIC_WAYPOINTS[0];
+    let nextWP = CINEMATIC_WAYPOINTS[CINEMATIC_WAYPOINTS.length - 1];
 
-    // Smooth cubic ease for segment transitions
+    for (let i = 0; i < CINEMATIC_WAYPOINTS.length - 1; i++) {
+      if (p >= CINEMATIC_WAYPOINTS[i].progress && p <= CINEMATIC_WAYPOINTS[i + 1].progress) {
+        prevWP = CINEMATIC_WAYPOINTS[i];
+        nextWP = CINEMATIC_WAYPOINTS[i + 1];
+        break;
+      }
+    }
+
+    const range = nextWP.progress - prevWP.progress;
+    const localP = range > 0 ? (p - prevWP.progress) / range : 0;
+
+    // Smooth cubic ease-in-out
     const eased =
-      segProgress < 0.5
-        ? 4 * segProgress * segProgress * segProgress
-        : 1 - Math.pow(-2 * segProgress + 2, 3) / 2;
+      localP < 0.5
+        ? 4 * localP * localP * localP
+        : 1 - Math.pow(-2 * localP + 2, 3) / 2;
 
-    const wpA = WAYPOINTS[segIndex];
-    const wpB = WAYPOINTS[segIndex + 1];
-
-    // Compute base position & target along spline segment
-    targetCameraPos.current.lerpVectors(wpA.position, wpB.position, eased);
-    targetLookAt.current.lerpVectors(wpA.target, wpB.target, eased);
+    targetCameraPos.current.lerpVectors(prevWP.position, nextWP.position, eased);
+    targetLookAt.current.lerpVectors(prevWP.target, nextWP.target, eased);
 
     // Subtle interactive mouse parallax
-    const mouseOffsetX = pointer.x * 0.2;
+    const mouseOffsetX = pointer.x * 0.18;
     const mouseOffsetY = pointer.y * 0.12;
 
-    const finalTargetPos = new THREE.Vector3(
+    const finalPos = new THREE.Vector3(
       targetCameraPos.current.x + mouseOffsetX,
       targetCameraPos.current.y + mouseOffsetY,
       targetCameraPos.current.z
     );
 
-    // Butter-smooth frame interpolation
-    const lerpFactor = Math.min(1, delta * 4.5);
-    camera.position.lerp(finalTargetPos, lerpFactor);
-    currentLookAt.current.lerp(targetLookAt.current, lerpFactor);
+    // 60 FPS smooth interpolation
+    const lerpSpeed = Math.min(1, delta * 4.2);
+    camera.position.lerp(finalPos, lerpSpeed);
+    currentLookAt.current.lerp(targetLookAt.current, lerpSpeed);
 
     camera.lookAt(currentLookAt.current);
   });
