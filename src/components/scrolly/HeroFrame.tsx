@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { ArrowDown, ChevronRight, Zap } from "lucide-react";
+import RazorText from "@/components/ui/RazorText";
+import { ArrowDown } from "lucide-react";
 
 export default function HeroFrame() {
   const scrollToCalculator = () => {
@@ -24,18 +25,22 @@ export default function HeroFrame() {
         </div>
       </div>
 
-      {/* Massive Display Typography */}
+      {/* Massive Display Typography with Invisible Razor Mask */}
       <div className="my-auto py-8 space-y-6 pointer-events-auto max-w-4xl">
-        <h1 className="text-[clamp(2.8rem,7vw,7.5rem)] font-extrabold uppercase tracking-tight leading-[0.92] text-white">
-          Space Missions <br />
-          <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-            Made Simple
-          </span>
-        </h1>
+        <RazorText>
+          <h1 className="text-[clamp(2.8rem,7vw,7.5rem)] font-extrabold uppercase tracking-tight leading-[0.92] text-white">
+            Space Missions <br />
+            <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              Made Simple
+            </span>
+          </h1>
+        </RazorText>
 
-        <p className="text-aerogrid-secondary text-base sm:text-xl md:text-2xl font-light max-w-2xl leading-relaxed">
-          Standardized satellite bus architecture, autonomous swarm coordination, and guaranteed fixed turnkey delivery.
-        </p>
+        <RazorText delay={120}>
+          <p className="text-aerogrid-secondary text-base sm:text-xl md:text-2xl font-light max-w-2xl leading-relaxed">
+            Standardized satellite bus architecture, autonomous swarm coordination, and guaranteed fixed turnkey delivery.
+          </p>
+        </RazorText>
       </div>
 
       {/* Bottom Floating Technical Button */}
