@@ -3,14 +3,17 @@
 import dynamic from "next/dynamic";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import StickyNav from "@/components/hud/StickyNav";
-import HeroSection from "@/components/scrolly/HeroSection";
-import MissionLifecycle from "@/components/scrolly/MissionLifecycle";
-import PayloadSelector from "@/components/configurator/PayloadSelector";
-import TelemetryHUD from "@/components/hud/TelemetryHUD";
-import MissionCalculator from "@/components/configurator/MissionCalculator";
-import FooterSection from "@/components/scrolly/FooterSection";
+import CustomCursor from "@/components/hud/CustomCursor";
+import HeroFrame from "@/components/scrolly/HeroFrame";
+import ChallengeSolutionFrame from "@/components/scrolly/ChallengeSolutionFrame";
+import TwoStepsTimelineFrame from "@/components/scrolly/TwoStepsTimelineFrame";
+import ApplicationPayloadsFrame from "@/components/scrolly/ApplicationPayloadsFrame";
+import TelemetryDockFrame from "@/components/scrolly/TelemetryDockFrame";
+import FixedCostCalculatorFrame from "@/components/scrolly/FixedCostCalculatorFrame";
+import CostComparisonFrame from "@/components/scrolly/CostComparisonFrame";
+import FooterCtaFrame from "@/components/scrolly/FooterCtaFrame";
 
-// Client-only dynamic WebGL Canvas to prevent SSR hydration errors
+// Dynamic WebGL 3D Canvas
 const CanvasContainer = dynamic(
   () => import("@/components/3d/CanvasContainer"),
   { ssr: false }
@@ -19,21 +22,26 @@ const CanvasContainer = dynamic(
 export default function Home() {
   return (
     <SmoothScroll>
-      <main className="relative min-h-screen bg-black text-white selection:bg-aerogrid-cyan/30 selection:text-aerogrid-glow">
-        {/* Fixed WebGL 3D Canvas in background (Camera waypoints linked to scroll) */}
+      <main className="relative min-h-screen bg-black text-white selection:bg-aerogrid-cyan/30 selection:text-aerogrid-glow overflow-x-hidden">
+        {/* Custom Aerospace Floating Cursor */}
+        <CustomCursor />
+
+        {/* Fixed 3D WebGL Canvas Layer (Z-0, pointer-events-none) */}
         <CanvasContainer />
 
-        {/* Sticky Aerospace HUD Stage Navigator */}
+        {/* Minimalist Sticky Header (Z-50) */}
         <StickyNav />
 
-        {/* Scrollytelling Interactive UI Sections (Pointer events enabled for cards) */}
+        {/* 1:1 EnduroSat Fullscreen Scrollytelling Frames (Z-10) */}
         <div className="relative z-10">
-          <HeroSection />
-          <MissionLifecycle />
-          <PayloadSelector />
-          <TelemetryHUD />
-          <MissionCalculator />
-          <FooterSection />
+          <HeroFrame />
+          <ChallengeSolutionFrame />
+          <TwoStepsTimelineFrame />
+          <ApplicationPayloadsFrame />
+          <TelemetryDockFrame />
+          <FixedCostCalculatorFrame />
+          <CostComparisonFrame />
+          <FooterCtaFrame />
         </div>
       </main>
     </SmoothScroll>
