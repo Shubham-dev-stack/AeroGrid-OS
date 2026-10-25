@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #000000;
+  --bg-surface: #070B13;
+  --bg-card: rgba(13, 20, 32, 0.7);
+  --accent-cyan: #00A1FF;
+  --accent-amber: #FC6A18;
+  --accent-glow: #DAF2FF;
+  --text-primary: #FFFFFF;
+  --text-secondary: #787A85;
+  --text-dim: #4B5160;
+  --border-subtle: #23232C;
+  --border-active: #00A1FF;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  color: #FFFFFF;
+  overflow-x: hidden;
+}
