@@ -2,20 +2,20 @@
 
 import React from "react";
 import { ArrowRight, Square, Terminal, Zap } from "lucide-react";
+import { scrollToProgress } from "@/lib/scrollStore";
 
 export default function FooterCtaFrame() {
   const scrollToCalculator = () => {
-    const el = document.getElementById("frame-calculator");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    scrollToProgress(0.86);
   };
 
   return (
     <footer
       id="frame-footer"
-      className="relative min-h-screen flex flex-col justify-between px-6 md:px-16 lg:px-24 pt-32 pb-12 pointer-events-none select-none max-w-[1700px] mx-auto w-full"
+      className="relative h-full flex flex-col justify-between px-6 md:px-16 lg:px-24 pt-28 pb-10 pointer-events-none select-none max-w-[1700px] mx-auto w-full"
     >
       {/* Big Center CTA Block */}
-      <div className="my-auto text-center space-y-8 pointer-events-auto max-w-4xl mx-auto">
+      <div className="my-auto text-center space-y-6 pointer-events-auto max-w-4xl mx-auto">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-aerogrid-cyan/40 bg-aerogrid-cyan/10 text-aerogrid-cyan text-xs font-mono tracking-widest uppercase shadow-cyan-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-aerogrid-cyan animate-pulse" />
           <span>START YOUR MISSION</span>
@@ -33,10 +33,10 @@ export default function FooterCtaFrame() {
         </p>
 
         {/* Glowing Square Icon Button */}
-        <div className="pt-4 flex justify-center">
+        <div className="pt-2 flex justify-center">
           <button
             onClick={scrollToCalculator}
-            className="group relative flex items-center gap-4 px-8 py-4 rounded-full border border-aerogrid-cyan/60 bg-black hover:bg-aerogrid-cyan hover:border-aerogrid-glow transition-all duration-300 shadow-cyan-glow"
+            className="group relative flex items-center gap-4 px-8 py-4 rounded-full border border-aerogrid-cyan/60 bg-black hover:bg-aerogrid-cyan hover:border-aerogrid-glow transition-all duration-300 shadow-cyan-glow cursor-pointer"
           >
             <div className="w-4 h-4 rounded-sm border-2 border-aerogrid-cyan group-hover:border-black group-hover:bg-black transition-colors flex items-center justify-center">
               <Square className="w-2.5 h-2.5 text-aerogrid-cyan group-hover:text-black fill-current" />
@@ -50,7 +50,7 @@ export default function FooterCtaFrame() {
       </div>
 
       {/* Minimalist Aerospace Footer Links */}
-      <div className="pointer-events-auto border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs font-mono text-aerogrid-secondary">
+      <div className="pointer-events-auto border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-xs font-mono text-aerogrid-secondary">
         <div className="flex items-center gap-3">
           <span className="w-2 h-2 rounded-full bg-aerogrid-cyan" />
           <span className="text-white font-bold tracking-widest uppercase">
@@ -61,16 +61,8 @@ export default function FooterCtaFrame() {
         </div>
 
         <div className="flex items-center gap-6">
-          <a
-            href="#frame-hero"
-            className="hover:text-white transition-colors"
-          >
-            BACK TO TOP &uarr;
-          </a>
-          <span className="text-white/20">/</span>
-          <span>LAT: 37.7749° N, LON: 122.4194° W</span>
-          <span className="text-white/20">/</span>
-          <span className="text-emerald-400">STATUS: NOMINAL</span>
+          <span className="text-slate-400">STATUS: <strong className="text-emerald-400">100% OPERATIONAL</strong></span>
+          <span className="text-slate-400">SATELLITE BUS: <strong className="text-white">GEN-4 CUBESAT</strong></span>
         </div>
       </div>
     </footer>

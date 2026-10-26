@@ -3,17 +3,17 @@
 import React from "react";
 import RazorText from "@/components/ui/RazorText";
 import { ArrowDown } from "lucide-react";
+import { scrollToProgress } from "@/lib/scrollStore";
 
 export default function HeroFrame() {
   const scrollToCalculator = () => {
-    const el = document.getElementById("frame-calculator");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    scrollToProgress(0.86);
   };
 
   return (
     <section
       id="frame-hero"
-      className="relative min-h-screen flex flex-col justify-between px-6 md:px-16 lg:px-24 pt-32 pb-14 pointer-events-none select-none max-w-[1700px] mx-auto w-full"
+      className="relative h-full flex flex-col justify-between px-6 md:px-16 lg:px-24 pt-28 pb-12 pointer-events-none select-none max-w-[1700px] mx-auto w-full"
     >
       {/* Top Status Pill */}
       <div className="pointer-events-auto">
@@ -26,7 +26,7 @@ export default function HeroFrame() {
       </div>
 
       {/* Massive Display Typography with Invisible Razor Mask */}
-      <div className="my-auto py-8 space-y-6 pointer-events-auto max-w-4xl">
+      <div className="my-auto py-6 space-y-6 pointer-events-auto max-w-4xl">
         <RazorText>
           <h1 className="text-[clamp(2.8rem,7vw,7.5rem)] font-extrabold uppercase tracking-tight leading-[0.92] text-white">
             Space Missions <br />
@@ -47,7 +47,7 @@ export default function HeroFrame() {
       <div className="pointer-events-auto flex items-center justify-between border-t border-white/10 pt-6">
         <button
           onClick={scrollToCalculator}
-          className="group flex items-center gap-3 px-6 py-3 rounded-full border border-white/20 bg-black/60 hover:border-aerogrid-cyan hover:bg-aerogrid-cyan/10 backdrop-blur-md transition-all text-xs font-mono tracking-widest uppercase text-white shadow-card-glass"
+          className="group flex items-center gap-3 px-6 py-3 rounded-full border border-white/20 bg-black/60 hover:border-aerogrid-cyan hover:bg-aerogrid-cyan/10 backdrop-blur-md transition-all text-xs font-mono tracking-widest uppercase text-white shadow-card-glass cursor-pointer"
         >
           <span>Design your mission</span>
           <div className="w-6 h-6 rounded-full bg-aerogrid-cyan/20 group-hover:bg-aerogrid-cyan flex items-center justify-center transition-colors">

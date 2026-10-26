@@ -11,3 +11,16 @@ export const setScrollProgress = (progress: number, velocity: number = 0) => {
   scrollState.progress = Math.max(0, Math.min(1, progress));
   scrollState.velocity = velocity;
 };
+
+export const scrollToProgress = (targetProgress: number) => {
+  if (typeof window === "undefined") return;
+  const totalScroll = Math.max(
+    1,
+    document.documentElement.scrollHeight - window.innerHeight
+  );
+  const targetY = Math.max(0, Math.min(1, targetProgress)) * totalScroll;
+  window.scrollTo({
+    top: targetY,
+    behavior: "smooth",
+  });
+};

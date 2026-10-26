@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroGrid OS - Autonomous Space & Mission Operations Platform</title>
+    <link rel="stylesheet" href="https://www.endurosat.com/wp-content/themes/endurosat/assets/css/style.min.css">
+    <link rel="stylesheet" href="https://www.endurosat.com/wp-content/themes/endurosat/60fps/space-service/assets/index-BY930IXB.css">
+    <style>
+        @font-face { font-family: "Magnetik"; src: url("https://www.endurosat.com/wp-content/themes/endurosat/assets/fonts/Magnetik-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+        @font-face { font-family: "Magnetik"; src: url("https://www.endurosat.com/wp-content/themes/endurosat/assets/fonts/Magnetik-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+        @font-face { font-family: "Magnetik"; src: url("https://www.endurosat.com/wp-content/themes/endurosat/assets/fonts/Magnetik-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+        @font-face { font-family: "Magnetik"; src: url("https://www.endurosat.com/wp-content/themes/endurosat/assets/fonts/Magnetik-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+        body { margin: 0; background-color: #000; overflow-x: hidden; color: #fff; font-family: "Magnetik", sans-serif; }
+    </style>
+    <script>
+        window.base_url = 'https://www.endurosat.com/wp-content/themes/endurosat';
+        window.new_space_service_base_url = 'https://www.endurosat.com/wp-content/themes/endurosat/60fps/space-service/';
+        window.new_homepage_base_url = 'https://www.endurosat.com/wp-content/themes/endurosat/60fps/homepage/';
+    </script>
+</head>
+<body class="preloaded loaded">
+<header style="position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; pointer-events: auto; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-family: 'Magnetik', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #fff;">AEROGRID<span style="color: #00A1FF;">.</span></span>
+        <span style="font-size: 10px; font-family: monospace; padding: 3px 8px; border-radius: 9999px; background: rgba(0,161,255,0.15); border: 1px solid rgba(0,161,255,0.4); color: #00A1FF; font-weight: 600; text-transform: uppercase;">Mission Ready v3.8</span>
+    </div>
+    <div style="display: flex; gap: 32px; font-family: 'Magnetik', sans-serif; font-size: 14px; text-transform: uppercase; font-weight: 500; letter-spacing: 0.05em;">
+        <a href="#fps-app" style="color: #fff; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#fff'">Space Service</a>
+        <a href="#payloads" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Payloads</a>
+        <a href="#cost" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Cost Calculator</a>
+    </div>
+    <div style="display: flex; gap: 16px; align-items: center;">
+        <a href="https://github.com/Shubham-dev-stack/AeroGrid-OS" target="_blank" style="display: flex; align-items: center; gap: 8px; font-family: 'Magnetik', sans-serif; font-size: 13px; text-transform: uppercase; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); transition: all 0.2s;" onmouseover="this.style.borderColor='#00A1FF'; this.style.color='#00A1FF'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.color='#fff'">
+            GitHub
+        </a>
+    </div>
+</header>
+
+    <div class="mouse_frame">
+        <div class="follower">
+            <div class="translation_wrap">
+                <div class="mouse">
+                    <div class="type_default"></div>
+                    <div class="type_drag">
+                        <div>Drag</div>
+                        <svg viewBox="0 0 79 17" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M70.4057 0.984375L78.12 8.54539L78.1038 8.56119L78.4123 8.8635L70.1131 16.9978L69.3989 16.2979L77.0001 8.84769L69.6916 1.68435L70.4057 0.984375Z" fill="black"/>
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00664 0.984375L0.292377 8.54539L0.308506 8.56119L7.05719e-05 8.8635L8.29926 16.9978L9.01343 16.2979L1.41227 8.84769L8.7208 1.68435L8.00664 0.984375Z" fill="black"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="fps-app" style="background: black">
+    <div class="fps-scroll-overlay"></div>
+    <canvas id="fps-webgl-canvas"></canvas>
+    <div class="fps-scroll-wrapper"></div>
+
+            <a class="fps-button fps-fixed"
+            href="https://configurator.endurosat.com/"
+                            data-gtm="gtm--body--button"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    data-text="Design your mission">
+            <span>Design your mission</span>
+            <div class="fps-square">
+                <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9996 0.999952L13.9996 15L14.9996 15L14.9996 -4.7981e-05L14.5713 -4.73067e-05H13.9996L0.428759 -4.7981e-05L0.428759 0.999952L13.9996 0.999952ZM0.707197 15.0217L3.61672e-05 14.3147L10.3131 4.00009L11.0202 4.70714L0.707197 15.0217Z" fill="black" />
+                </svg>
+            </div>
+        </a>
+    
+    <div class="fps-navigation-bar">
+        <div class="fps-navigation-bar-inner">
+            <div class="fps-nav-section" data-key="mission">
+                <div class="fps-nav-section-progress"></div>
+                <div class="fps-nav-section-title">MISSION LIFECYCLE</div>
+                <div class="fps-nav-sub">
+                    <div class="fps-nav-sub-section" data-key="design">
+                        <div class="fps-nav-sub-section-progress"><span>Design</span></div>
+                        <div class="fps-nav-sub-section-progress fps-nav-sub-section-progress-start">
+                            <span>Design</span>
+                        </div>
+                        <span class="fps-nav-sub-text">Design</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="ait">
+                        <div class="fps-nav-sub-section-progress"><span>AIT</span></div>
+                        <div class="fps-nav-sub-section-progress fps-nav-sub-section-progress-start">
+                            <span>AIT</span>
+                        </div>
+                        <span class="fps-nav-sub-text">AIT</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="launch">
+                        <div class="fps-nav-sub-section-progress"><span>Launch</span></div>
+                        <div class="fps-nav-sub-section-progress fps-nav-sub-section-progress-start">
+                            <span>Launch</span>
+                        </div>
+                        <span class="fps-nav-sub-text">Launch</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="ops">
+                        <div class="fps-nav-sub-section-progress"><span>OPS</span></div>
+                        <div class="fps-nav-sub-section-progress fps-nav-sub-section-progress-start">
+                            <span>OPS</span>
+                        </div>
+                        <span class="fps-nav-sub-text">OPS</span>
+                    </div>
+                </div>
+            </div>
+            <div class="fps-nav-section" data-key="spaceops">
+                <div class="fps-nav-section-progress"></div>
+                <div class="fps-nav-section-title">SPACE OPS</div>
+                <div class="fps-nav-sub">
+                    <div class="fps-nav-sub-section" data-key="command">
+                        <div class="fps-nav-sub-section-progress"><span>Command</span></div>
+                        <span class="fps-nav-sub-text">Command</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="monitor">
+                        <div class="fps-nav-sub-section-progress"><span>Monitor</span></div>
+                        <span class="fps-nav-sub-text">Monitor</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="access">
+                        <div class="fps-nav-sub-section-progress"><span>Access</span></div>
+                        <span class="fps-nav-sub-text">Access</span>
+                    </div>
+                </div>
+            </div>
+            <div class="fps-nav-section" data-key="technology">
+                <div class="fps-nav-section-progress"></div>
+                <div class="fps-nav-section-title">TECHNOLOGY</div>
+                <div class="fps-nav-sub">
+                    <div class="fps-nav-sub-section" data-key="encryption">
+                        <div class="fps-nav-sub-section-progress"><span>Encryption</span></div>
+                        <span class="fps-nav-sub-text">Encryption</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="scalability">
+                        <div class="fps-nav-sub-section-progress"><span>Scalability</span></div>
+                        <span class="fps-nav-sub-text">Scalability</span>
+                    </div>
+                </div>
+            </div>
+            <div class="fps-nav-section" data-key="satellites">
+                <div class="fps-nav-section-progress"></div>
+                <div class="fps-nav-section-title"></div>
+                <div class="fps-nav-sub">
+                    <div class="fps-nav-sub-section" data-key="software">
+                        <div class="fps-nav-sub-section-progress"><span>Satellites</span></div>
+                        <span class="fps-nav-sub-text">Satellites</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="modular">
+                        <div class="fps-nav-sub-section-progress"><span>Modular</span></div>
+                        <span class="fps-nav-sub-text">Modular</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="flexibility">
+                        <div class="fps-nav-sub-section-progress"><span>Upgradeable</span></div>
+                        <span class="fps-nav-sub-text">Upgradeable</span>
+                    </div>
+                </div>
+            </div>
+            <div class="fps-nav-section" data-key="costing">
+                <div class="fps-nav-section-progress"></div>
+                <div class="fps-nav-section-title">COSTING</div>
+                <div class="fps-nav-sub">
+                    <div class="fps-nav-sub-section" data-key="transparency">
+                        <div class="fps-nav-sub-section-progress"><span>Transparency</span></div>
+                        <span class="fps-nav-sub-text">Transparency</span>
+                    </div>
+                    <div class="fps-nav-sub-section" data-key="datacost">
+                        <div class="fps-nav-sub-section-progress"><span>Cost of data</span></div>
+                        <span class="fps-nav-sub-text">Cost of data</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fps-root">
+        <section class="fps-frame fps-hero fps-section-left fps-section-center" data-frame="Hero" data-first data-scroll-height="50svh" data-first>
+            <div>
+                <div class="fps-pretitle fps-text-27 fps-color-blue">Fixed Cost. Quick Access to Orbit</div>
+                <h1 class="fps-title-main fps-text-135">SPACE MISSIONS <br />
+MADE SIMPLE</h1>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-problem fps-section-reveal" data-frame="TextReveal" data-no-transition data-second>
+            <div class="fps-inner">
+                <p class="fps-pretitle fps-text-27 fps-color-orange">The Challenge</p>
+                <h2 class="fps-subtitle fps-text-59">Constellations are prohibitively expensive, tailor-built,  <br />
+have tedious supply chains, and are risky to manage</h2>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-vision fps-section-reveal" data-scroll-height="200svh" data-frame="TextReveal" data-no-transition>
+            <div class="fps-inner">
+                <p class="fps-pretitle fps-text-27 fps-color-blue">The Solution</p>
+                <h2 class="fps-subtitle fps-text-59">Standardized satellites and operations enable  <br />
+highly profitable space data businesses</h2>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-two-steps" data-frame="TwoSteps" data-scroll-height="400svh" data-scroll-speed="1.2" data-snap-points="0.25;1;1.5" data-no-transition>
+            <div class="fps-title-wrapper">
+                <div class="fps-title-wrapper-inner">
+                    <h3 class="fps-title-small fps-text-27 fps-color-blue">Your mission in</h3>
+                    <h2 class="fps-title-big fps-text-135">Two steps</h2>
+                </div>
+            </div>
+            <div class="fps-inner">
+                <div class="fps-define-receive">
+                    <div class="fps-step-item">
+                                                    <span class="fps-step-number fps-text-27 fps-color-grey"><span>01</span></span>
+                                                <h3 class="fps-step-title fps-text-135"><span>Define</span></h3>
+                        <p class="fps-title-small fps-text-27 fps-color-grey"><span>your requirements</span></p>
+                    </div>
+                    <div class="fps-separator"><span></span></div>
+                    <div class="fps-spacer"></div>
+                    <div class="fps-item-center">
+                        <span class="fps-title-big fps-text-135">In just 6 months</span>
+                        <div class="fps-progress-bar">
+                            <div class="fps-progress-bar-bg">
+                                <div class="fps-progress-bar-fill"></div>
+                            </div>
+                            <div class="fps-progress-bar-text fps-left fps-text-18 fps-color-blue">0 months</div>
+                            <div class="fps-progress-bar-text fps-right fps-text-18 fps-color-blue">6 months</div>
+
+                        </div>
+                    </div>
+                    <div class="fps-step-item fps-item-right">
+                                                    <span class="fps-step-number fps-text-27 fps-color-grey"><span>02</span></span>
+                                                <h3 class="fps-step-title fps-text-135">
+                            <span>Receive</span>
+                        </h3>
+                        <p class="fps-title-small fps-text-27 fps-color-grey"><span>your data</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-we-cover fps-section-center" data-frame="WeCover" data-scroll-height="200svh" data-scroll-speed="1.5">
+            <h2 class="fps-title-big fps-text-135">We cover it all</h2>
+        </section>
+
+        <section class="fps-frame fps-step-hero fps-step-hero-left" data-scroll-height="300svh" data-nav-key="design" data-nav-key-progress="0;0.5" data-frame="Playload" data-no-transition="" data-top-nav-key="mission">
+            <div class="fps-continue-sroll">
+                <div class="fps-scroll-indicator"></div>
+                <span class="fps-text-18">Scroll to continue</span>
+            </div>
+            <div class="fps-inner">
+                <div class="fps-step-item">
+                                            <span class="fps-step-number fps-text-27 fps-color-grey"><span>01</span></span>
+                                        <h3 class="fps-step-title fps-text-135"><span>Define</span></h3>
+                    <p class="fps-title-small fps-text-27 fps-color-grey"><span>your requirements</span></p>
+                </div>
+
+                <div class="fps-playload-wrapper">
+                    <p class="fps-title-small fps-text-18 fps-select-your-app">Select your application</p>
+                    <div class="fps-playload-category">
+                        <button class="fps-playload-category-item fps-active" data-category="remote">
+                            <div class="fps-inner">
+                                <span>remote sensing</span>
+                            </div>
+                        </button>
+                        <button class="fps-playload-category-item" data-category="connectivity">
+                            <div class="fps-inner">
+                                <span>connectivity</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="fps-playload-sliders">
+                        <div class="fps-playload-slider fps-active" data-category="remote">
+
+                                                            <button class="fps-playload-slider-item" data-item="hyperspectral" data-action="click:selectCaptation" data-value="Hyperspectral">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/hyperspectral-300x300.png" alt="hyperspectral" draggable="false" loading="lazy">
+                                                                                                                <span>hyperspectral</span>
+                                                                    </button>
+                            
+                                                            <button class="fps-playload-slider-item" data-item="multispectral" data-action="click:selectCaptation" data-value="Multispectral">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/multispectral-300x300.png" alt="multispectral" draggable="false" loading="lazy">
+                                                                                                                <span>multispectral</span>
+                                                                    </button>
+                            
+                                                            <button class="fps-playload-slider-item" data-item="sar" data-action="click:selectCaptation" data-value="SAR">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/sar-300x300.png" alt="sar" draggable="false" loading="lazy">
+                                                                                                                <span>sar</span>
+                                                                    </button>
+                            
+                                                            <button class="fps-playload-slider-item" data-item="thermal" data-action="click:selectCaptation" data-value="Thermal">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/thermal-300x300.png" alt="thermal" draggable="false" loading="lazy">
+                                                                                                                <span>thermal</span>
+                                                                    </button>
+                            
+                                                            <button class="fps-playload-slider-item" data-item="vhr" data-action="click:selectCaptation" data-value="VHR">
+                                          
+                                        <img src="https://www.endurosat.com/wp-content/uploads/2026/04/vhroptical-300x300.png" alt="vhr" draggable="false" loading="lazy">
+                                                                                                                <span>vhr</span>
+                                                                    </button>
+                            
+                        </div>
+
+                        <div class="fps-playload-slider" data-category="connectivity">
+                                                            <button class="fps-playload-slider-item" data-item="ads-b" data-action="click:selectCaptation" data-value="ADSB">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/ads-b-300x300.png" alt="ads-b" draggable="false" loading="lazy">
+                                                                                                                <span>ads-b</span>
+                                                                    </button>
+                            
+                                                            <button class="fps-playload-slider-item" data-item="ais" data-action="click:selectCaptation" data-value="AIS">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/ais-300x300.png" alt="ais" draggable="false" loading="lazy">
+                                                                                                                <span>ais</span>
+                                                                    </button>
+                                                        
+                                                            <button class="fps-playload-slider-item" data-item="broadband" data-action="click:selectCaptation" data-value="Broadband">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/broadband-300x300.png" alt="broadband" draggable="false" loading="lazy">
+                                                                                                                <span>broadband</span>
+                                                                    </button>
+                            
+                                                            <button class="fps-playload-slider-item" data-item="sigint" data-action="click:selectCaptation" data-value="SIG">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/sigint-300x300.png" alt="sigint" draggable="false" loading="lazy">
+                                                                                                                <span>sigint</span>
+                                                                    </button>
+                            
+                                                            <button class="fps-playload-slider-item" data-item="store-forward" data-action="click:selectCaptation" data-value="StoreForward">
+                                                                            <img src="https://www.endurosat.com/wp-content/uploads/2026/04/storeforward-300x300.png" alt="store-forward" draggable="false" loading="lazy">
+                                                                                                                <span>store-forward</span>
+                                                                    </button>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-subsection" data-nav-key="design" data-nav-key-progress="0.5;1" data-frame="SubSection" data-transition-horizontal="leave" data-scroll-speed=".7" data-scroll-height="200svh">
+            <h2 class="fps-text-59">Mission <br />
+Analysis & Design</h2>
+        </section>
+
+        <section class="fps-frame fps-subsection" data-nav-key="ait" data-transition-horizontal="both" data-frame="SubSection" data-scroll-speed=".7" data-scroll-height="200svh">
+            <h2 class="fps-text-59">Payload Integration  <br />
+& Space Qualification</h2>
+        </section>
+
+        <section class="fps-frame fps-subsection" data-nav-key="launch" data-transition-horizontal="both" data-scroll-height="200svh" data-frame="SubSection" data-scroll-speed=".7" data-scroll-height="200svh">
+            <h2 class="fps-text-59">Satellite  <br />
+Launch & Mission <br />
+Commissioning</h2>
+        </section>
+
+        <section class="fps-frame fps-step-hero fps-step-hero-right" data-nav-key="ops" data-scroll-height="200svh" data-transition-horizontal="enter" data-frame="Receive" data-scroll-speed=".8">
+            <div class="fps-inner">
+                <div class="fps-step-item fps-item-right">
+                                            <span class="fps-step-number fps-text-27 fps-color-grey"><span>02</span></span>
+                                        <h3 class="fps-step-title fps-text-135"><span>Receive</span></h3>
+                    <p class="fps-title-small fps-text-27 fps-color-grey"><span>your data</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-section-center fps-cloud" data-frame="Cloud" data-no-transition>
+            <div class="fps-inner" data-scroll-speed=".8">
+                <h3 class="fps-title-small fps-text-27 fps-color-blue">Cloud-based</h3>
+                <h2 class="fps-title-big fps-text-135">mission operations hub</h2>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-section-top fps-subsection" data-nav-key="command" data-transition-horizontal="both" data-frame="SubSection" data-top-nav-key="spaceops">
+            <h2 class="fps-text-59 ">Command your fleet with event-driven autonomous tasking</h2>
+        </section>
+
+        <section class="fps-frame fps-section-top fps-section-right-dk fps-subsection" data-nav-key="monitor" data-transition-horizontal="both" data-frame="SubSection">
+            <h2 class="fps-text-59 ">Monitor <br />
+dashboards <br />
+& live telemetry</h2>
+        </section>
+
+        <section class="fps-frame fps-section-top fps-section-right-dk fps-subsection" data-nav-key="access" data-transition-horizontal="enter" data-frame="SubSection" data-scroll-speed=".7">
+            <h2 class="fps-text-59">Access your data through cloud and API interfaces</h2>
+        </section>
+
+        <section class="fps-frame fps-title-subtitle fps-section-right" data-nav-key="encryption" data-top-nav-key="technology" data-scroll-height="200svh" data-frame="TitleSubtitle" data-transition-horizontal="leave">
+            <div class="fps-inner">
+                <h2 class="fps-text-135">Military <br />
+grade</h2>
+                <h3 class="fps-text-27 fps-color-blue">encryption</h3>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-title-subtitle" data-nav-key="scalability" data-frame="TitleSubtitle" data-scroll-height="200svh" data-transition-horizontal="both" data-scroll-speed=".8">
+            <div class="fps-inner">
+                <h2 class="fps-text-135">Scalable</h2>
+                <h3 class="fps-text-27 fps-color-blue">60 Sats per month</h3>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-title-subtitle fps-software" data-nav-key="software" data-transition-horizontal="both" data-frame="TitleSubtitle" data-scroll-speed=".7" data-scroll-height="200svh">
+            <div class="fps-inner">
+                <h2 class="fps-text-135">Software <br />
+FLEXIBLE</h2>
+                <h3 class="fps-text-27 fps-color-blue">Satellites</h3>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-section-top fps-subsection" data-transition-horizontal="both" data-nav-key="modular" data-scroll-height="150svh" data-frame="SubSection">
+            <h2 class="fps-text-59  fps-large">Modular design, configurable with no additional engineering</h2>
+        </section>
+
+        <section class="fps-frame fps-section-top fps-subsection fps-panel-infos" data-nav-key="flexibility" data-frame="Performance" data-scroll-speed=".7" data-scroll-height="180svh" data-transition-horizontal="enter">
+            <h2 class="fps-text-59 fps-large">Performance <br />
+modification <br />
+in-flight</h2>
+            <div class="fps-panel">
+                <div class="fps-panel-line"></div>
+                <ul class="fps-infos">
+                    <li>
+                        <span class="fps-info-name">Charge Rate</span>
+                        <span class="fps-info-value fps-info-ampere">4.2A</span>
+                    </li>
+                    <li>
+                        <span class="fps-info-name">Max DoD per Orbit</span>
+                        <div class="fps-info-value">
+                            <div class="fps-progress-wrapper">
+                                <div class="fps-progress-bar fps-info-dod-bar"></div>
+                            </div>
+                            <span class="fps-info-dod">30%</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="fps-info-name">Data rate</span>
+                        <span class="fps-info-value fps-info-data">100 Mbps</span>
+                    </li>
+                    <li>
+                        <span class="fps-info-name">Tx power</span>
+                        <span class="fps-info-value fps-info-power">30 dBm</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-cost fps-section-top" data-nav-key="transparency" data-top-nav-key="costing" data-scroll-speed=".7" data-frame="Cost" data-no-transition data-scroll-height="300svh">
+            <div class="fps-inner">
+                <div class="fps-cost-title-wrapper">
+                    <h2 class="fps-cost-title fps-text-135">Fixed Cost</h2>
+                    <h3 class="fps-cost-subtitle fps-text-27 fps-color-blue">Transparent pricing</h3>
+                </div>
+                <div class="fps-cost-wrapper">
+                    <div class="fps-cost-item fps-left">
+                        <h3 class="fps-cost-number fps-satellites fps-text-135"><span>234</span></h3>
+                        <p class="fps-cost-description fps-text-27 fps-color-grey"><span>satellites</span></p>
+                    </div>
+                    <div class="fps-center-wrapper">
+                        <hr class="fps-cost-separator">
+                        <div class="fps-input-wrapper">
+                            <span class="fps-input-title fps-text-18 fps-color-grey"><span>Revisit time</span></span>
+                            <span class="fps-input-title fps-revisit-time-value fps-text-18 fps-color-grey"><span>10H</span></span>
+                            <div class="partial-input-draggable" style="--currentProgress: 0;">
+                                <input name="revisitTime" type="number" min="0" max="1" step="0.01" value="0.5" />
+                                <div class="slider-w">
+                                    <div class="slider-inner-w">
+                                        <div class="slider-inner">
+                                        </div>
+                                        <div class="sensor-zone"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="fps-cost-separator fps-last">
+                    </div>
+                    <div class="fps-cost-item">
+                        <h3 class="fps-cost-number fps-text-135 fps-cost-total"><span>344M</span></h3>
+                        <p class="fps-cost-description fps-text-27 fps-color-grey"><span>TOTAL MISSION COST</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fps-frame fps-total-cost" data-frame="TotalCost" data-nav-key="datacost" data-scroll-height="500svh" data-snap-points="0.25;1;1.5" data-no-transition style="--active-color: #FC6A18;">
+            <div class="fps-inner">
+                <h2 class="fps-total-title fps-text-18 fps-color-grey">Total mission cost <br />
+divided by total amount <br />
+of data generated</h2>
+                <div class="fps-total-center">
+                    <span class="fps-center-pretitle fps-text-27">Cost of space data</span>
+                    <span class="fps-center-number">
+                        <div class="fps-center-number-content">3000</div>
+                        <div class="fps-center-number-one">1</div>
+                    </span>
+                    <span class="fps-center-unit fps-text-27"><span>USD/GB</span></span>
+                </div>
+                <div class="fps-scroll-wrapper">
+                    <div class="fps-scroll-content">
+                        <ul>
+                            <li class="fps-active">Traditional <br />
+space</li>
+                            <li>AeroGrid OS</li>
+                        </ul>
+                        <div class="fps-scrollbar">
+                            <span class="fps-progress-bar"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="fps-frame fps-section-center fps-orbit-today" data-frame="Orbit" data-no-transition
+            data-scroll-height="250svh">
+            <div class="fps-inner">
+                <h2 class="fps-title-main fps-text-135">Get to orbit today</h2>
+                                    <a class="fps-button fps-last-section-button"
+                        href="https://configurator.endurosat.com/"
+                                                    data-gtm="gtm--body--button"
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                        data-text="Design your mission">
+                        <span>Design your mission</span>
+                    </a>
+                            </div>
+        </section>
+
+                    <section class="fps-frame fps-section-center">
+                <div class="featured_products_section block relative">
+                    <div class="label_numbers_frame">
+                                                    <div class="label text_m font_magnetik fw_500 text_uppercase" anim-bottom-mask-reveal data-duration="1">
+                                Significant flight heritage                            </div>
+                                                                            <div class="number_frame">
+                                                                        <div class="nf_inner">
+                                            <div class="num font_magnetik text_uppercase" count-number-reveal data-end-val="100">
+                                                <span><i>100</i></span>
+                                                                                                    <svg viewBox="0 0 24 24" fill="none">
+                                                        <path d="M9.82371 24C9.67781 24 9.58055 23.9027 9.58055 23.7568V14.6383C9.58055 14.4924 9.48328 14.3951 9.33739 14.3951H0.243161C0.0972644 14.3951 0 14.2979 0 14.152V9.82371C0 9.67781 0.0972644 9.58055 0.243161 9.58055H9.33739C9.48328 9.58055 9.58055 9.48328 9.58055 9.33739V0.243161C9.58055 0.0972644 9.67781 0 9.82371 0H14.1763C14.3222 0 14.4195 0.0972644 14.4195 0.243161V9.33739C14.4195 9.48328 14.5167 9.58055 14.6626 9.58055H23.7568C23.9027 9.58055 24 9.67781 24 9.82371V14.152C24 14.2979 23.9027 14.3951 23.7568 14.3951H14.6626C14.5167 14.3951 14.4195 14.4924 14.4195 14.6383V23.7568C14.4195 23.9027 14.3222 24 14.1763 24H9.82371Z" fill="white"/>
+                                                    </svg>
+                                                                                            </div>
+                                                                                            <div class="num_label font_magnetic text_uppercase fw_400">
+                                                    SATELLITES IN ORBIT                                                </div>
+                                                                                    </div>
+                                                                                                            <div class="nf_inner">
+                                            <div class="num font_magnetik text_uppercase" count-number-reveal data-end-val="500">
+                                                <span><i>500</i></span>
+                                                                                                    <svg viewBox="0 0 24 24" fill="none">
+                                                        <path d="M9.82371 24C9.67781 24 9.58055 23.9027 9.58055 23.7568V14.6383C9.58055 14.4924 9.48328 14.3951 9.33739 14.3951H0.243161C0.0972644 14.3951 0 14.2979 0 14.152V9.82371C0 9.67781 0.0972644 9.58055 0.243161 9.58055H9.33739C9.48328 9.58055 9.58055 9.48328 9.58055 9.33739V0.243161C9.58055 0.0972644 9.67781 0 9.82371 0H14.1763C14.3222 0 14.4195 0.0972644 14.4195 0.243161V9.33739C14.4195 9.48328 14.5167 9.58055 14.6626 9.58055H23.7568C23.9027 9.58055 24 9.67781 24 9.82371V14.152C24 14.2979 23.9027 14.3951 23.7568 14.3951H14.6626C14.5167 14.3951 14.4195 14.4924 14.4195 14.6383V23.7568C14.4195 23.9027 14.3222 24 14.1763 24H9.82371Z" fill="white"/>
+                                                    </svg>
+                                                                                            </div>
+                                                                                            <div class="num_label font_magnetic text_uppercase fw_400">
+                                                    TB DATA DOWNLINKED                                                </div>
+                                                                                    </div>
+                                                                                                            <div class="nf_inner">
+                                            <div class="num font_magnetik text_uppercase" count-number-reveal data-end-val="900">
+                                                <span><i>900</i></span>
+                                                                                                    <svg viewBox="0 0 24 24" fill="none">
+                                                        <path d="M9.82371 24C9.67781 24 9.58055 23.9027 9.58055 23.7568V14.6383C9.58055 14.4924 9.48328 14.3951 9.33739 14.3951H0.243161C0.0972644 14.3951 0 14.2979 0 14.152V9.82371C0 9.67781 0.0972644 9.58055 0.243161 9.58055H9.33739C9.48328 9.58055 9.58055 9.48328 9.58055 9.33739V0.243161C9.58055 0.0972644 9.67781 0 9.82371 0H14.1763C14.3222 0 14.4195 0.0972644 14.4195 0.243161V9.33739C14.4195 9.48328 14.5167 9.58055 14.6626 9.58055H23.7568C23.9027 9.58055 24 9.67781 24 9.82371V14.152C24 14.2979 23.9027 14.3951 23.7568 14.3951H14.6626C14.5167 14.3951 14.4195 14.4924 14.4195 14.6383V23.7568C14.4195 23.9027 14.3222 24 14.1763 24H9.82371Z" fill="white"/>
+                                                    </svg>
+                                                                                            </div>
+                                                                                            <div class="num_label font_magnetic text_uppercase fw_400">
+                                                    YEARS IN SPACE                                                </div>
+                                                                                    </div>
+                                                                                                </div>
+                                            </div>
+                </div>
+            </section>
+                
+                    <section class="fps-frame fps-section-center" data-scroll-height="200svh">
+                <div class="trusted_section_home block relative">
+
+                                            <div class="label text_m font_magnetik fw_500 text_uppercase" anim-bottom-mask-reveal data-duration="2" data-stagger="0.15">
+                            Trusted BY                        </div>
+                    
+                    <div class="grid_frame overflow_hidden" anim-stagger-left-reveal>
+                        <div class="grid">
+                                                            <div class="inner counter">
+                                    <div class="num title_s font_magnetik fw_600" count-number-reveal data-end-val="450">
+                                        <i>450</i>
+                                                                                    <span>+</span>
+                                                                            </div>
+                                                                            <div class="small_text font_magnetik fw_400 text_uppercase">
+                                            Customers                                        </div>
+                                                                    </div>
+                            
+                                                                                                <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="199" height="39" src="https://www.endurosat.com/wp-content/uploads/2026/10/Vantor.webp" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="175" height="35" src="https://www.endurosat.com/wp-content/uploads/2026/04/customer-logos-tomorrow.webp" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="199" height="39" src="https://www.endurosat.com/wp-content/uploads/2026/10/TrustPoint.webp" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="175" height="75" src="https://www.endurosat.com/wp-content/uploads/2026/04/Aethero-1.png" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="100" height="85" src="https://www.endurosat.com/wp-content/uploads/2026/04/Talos.png" class="media no-lazy" alt="TALOS" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="147" height="113" src="https://www.endurosat.com/wp-content/uploads/2026/04/customer-logos-nasa.webp" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="175" height="75" src="https://www.endurosat.com/wp-content/uploads/2026/04/customer-logos-esa.webp" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="175" height="75" src="https://www.endurosat.com/wp-content/uploads/2026/04/customer-logos-break.webp" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="175" height="75" src="https://www.endurosat.com/wp-content/uploads/2026/04/customer-logos-berkley.webp" class="media no-lazy" alt="" decoding="async" />                                        </div>
+                                    </div>
+                                                                    <div class="inner">
+                                        <div class="media_frame stagger_piece">
+                                            <img width="100" height="101" src="https://www.endurosat.com/wp-content/uploads/2026/04/Shield-Space.png" class="media no-lazy" alt="Shield Space logo" decoding="async" />                                        </div>
+                                    </div>
+                                                            
+                                                            <div class="inner">
+                                    <a data-gtm="gtm--body--button" data-text="You?" class="cta block title_xs font_magnetik fw_600 text_uppercase stagger_piece" href="https://www.endurosat.com/contact/"><span>You?</span></a>                    
+                                </div>
+                                                    </div>
+                    </div>
+                </div>
+            </section>
+            </div>
+</div><style>
+    .footer .line:first-of-type {
+        border:unset;
+    }
+
+    .featured_products_section {
+        width: 100%;
+    }
+
+    .trusted_section_home {
+        width: 100%;
+    }
+
+    @media screen and (max-width: 768px) and (orientation: portrait) {
+        .trusted_section_home .grid .inner {
+            min-height: 0.6rem;
+        }
+        
+        .trusted_section_home .media_frame .media {
+            max-height: 0.55rem;
+        }
+    }
+</style>
+
+                    <div class="footer_frame overflow_hidden relative" data-method="footer">
+    <footer class="footer">
+        <div class="bg media_frame aspect">
+                            <img src="https://www.endurosat.com/wp-content/themes/endurosat/assets/img/svg/footer_bg.svg" alt="bg" class="media">
+                    </div>
+
+        <div class="container_1 relative">
+
+                            <div class="line"></div>
+
+                <div class="grid_outer">
+                    <div class="inner">
+                                                    <div class="label font_magnetik fw_400 text_uppercase">
+                                Headquarter                            </div>
+                                                                            <div class="text text_base font_magnetik fw_500">
+                                99 Tsarigradsko shose Blvd.<br />
+1113 Sofia<br />
+Bulgaria<br />
+European Union                            </div>
+                                            </div>
+
+                    <div class="inner">
+                                                    <div class="inner_grid">
+                                                                    <div class="ig_inner" data-method="footerExpander">
+                                        <div class="label font_magnetik fw_400 text_uppercase">
+                                            Company
+                                            <div class="icon">
+                                                <span></span>
+                                                <span></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="expander">
+                                                                                            <div class="e_inner">
+                                                                                                            <a data-gtm="gtm--footer--Home" data-text="Home" class="link font_magnetik fw_300" href="https://endurosat.com"><span>Home</span></a>                                                                                                            <a data-gtm="gtm--footer--About" data-text="About" class="link font_magnetik fw_300" href="https://www.endurosat.com/about/"><span>About</span></a>                                                                                                            <a data-gtm="gtm--footer--Projects" data-text="Projects" class="link font_magnetik fw_300" href="https://www.endurosat.com/projects/"><span>Projects</span></a>                                                                                                            <a data-gtm="gtm--footer--Space_Qualification" data-text="Space Qualification" class="link font_magnetik fw_300" href="https://www.endurosat.com/space-qualification/"><span>Space Qualification</span></a>                                                                                                            <a data-gtm="gtm--footer--Company_News" data-text="Company News" class="link font_magnetik fw_300" href="https://www.endurosat.com/news/"><span>Company News</span></a>                                                                                                            <a data-gtm="gtm--footer--SAR_Constellations" data-text="SAR Satellite Constellation Capability" class="no_redirect link font_magnetik fw_300" target="_blank" href="https://www.endurosat.com/news/sar-satellite-constellation-enabled-by-endurosat-metasensing/"><span>SAR Satellite Constellation Capability</span></a>                                                                                                            <a data-gtm="gtm--footer--Supplier_Resources" data-text="Supplier Resources" class="no_redirect link font_magnetik fw_300" target="_blank" href="https://www.endurosat.com/supplier-resources/"><span>Supplier Resources</span></a>                                                                                                    </div>
+                                                                                    </div>
+                                    </div>
+                                                                    <div class="ig_inner" data-method="footerExpander">
+                                        <div class="label font_magnetik fw_400 text_uppercase">
+                                            Products
+                                            <div class="icon">
+                                                <span></span>
+                                                <span></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="expander">
+                                                                                            <div class="e_inner">
+                                                                                                            <a data-gtm="gtm--footer--Satellites" data-text="Satellite Platforms" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/satellites/"><span>Satellite Platforms</span></a>                                                                                                            <a data-gtm="gtm--footer--CubeSats" data-text="CubeSats Platforms" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/cubesats/"><span>CubeSats Platforms</span></a>                                                                                                            <a data-gtm="gtm--footer--Communication" data-text="Communication" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/communication/"><span>Communication</span></a>                                                                                                            <a data-gtm="gtm--footer--Antennas" data-text="Antennas" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/antennas/"><span>Antennas</span></a>                                                                                                            <a data-gtm="gtm--footer--Onboard_Computers" data-text="Onboard Computers" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/onboard-computers/"><span>Onboard Computers</span></a>                                                                                                            <a data-gtm="gtm--footer--Power_Modules" data-text="Power Modules" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/power-modules/"><span>Power Modules</span></a>                                                                                                            <a data-gtm="gtm--footer--Solar_Panels" data-text="Solar Panels" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/solar-panels/"><span>Solar Panels</span></a>                                                                                                            <a data-gtm="gtm--footer--Structures" data-text="Structures" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/structures/"><span>Structures</span></a>                                                                                                            <a data-gtm="gtm--footer--Lab_Equipment" data-text="Lab Equipment" class="link font_magnetik fw_300" href="https://www.endurosat.com/products-category/lab-equipment/"><span>Lab Equipment</span></a>                                                                                                    </div>
+                                                                                    </div>
+                                    </div>
+                                                                    <div class="ig_inner" data-method="footerExpander">
+                                        <div class="label font_magnetik fw_400 text_uppercase">
+                                            Services
+                                            <div class="icon">
+                                                <span></span>
+                                                <span></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="expander">
+                                                                                            <div class="e_inner">
+                                                                                                            <a data-gtm="gtm--footer--Space_Service" data-text="Space Service" class="link font_magnetik fw_300" href="https://www.endurosat.com/space-service/"><span>Space Service</span></a>                                                                                                            <a data-gtm="gtm--footer--SpaceOps" data-text="SpaceOps" class="link font_magnetik fw_300" href="https://www.endurosat.com/spaceops/"><span>SpaceOps</span></a>                                                                                                            <a data-gtm="gtm--footer--SpaceDev" data-text="SpaceDev" class="link font_magnetik fw_300" href="https://www.endurosat.com/spacedev/"><span>SpaceDev</span></a>                                                                                                    </div>
+                                                                                    </div>
+                                    </div>
+                                                            </div>
+                                            </div>
+                </div>
+            
+                            <div class="grid_outer second with_certification_logo">
+                    <div class="inner">
+
+                                                    <div class="label font_magnetik fw_400 text_uppercase">
+                                Don't miss an update!<br />
+Subscribe to our newsletter                            </div>
+                        
+                                                    <div class="input_frame">
+                                <div class="swup_ajax_form swup_gf_ajax_form">
+                                    <div class="swup_form_item" data-id="5" data-title="false" data-descr="false" data-ajax="true" data-page-id="6759" data-page-title="Space Service" data-topic="">
+                                        
+                <div class='gf_browser_safari gform_wrapper gform-theme gform-theme--foundation gform-theme--framework gform-theme--orbital' data-form-theme='orbital' data-form-index='0' id='gform_wrapper_5' ><style>#gform_wrapper_5[data-form-index="0"].gform-theme{--gf-color-primary: #204ce5;--gf-color-primary-rgb: 32, 76, 229;--gf-color-primary-contrast: #fff;--gf-color-primary-contrast-rgb: 255, 255, 255;--gf-color-primary-darker: #001AB3;--gf-color-primary-lighter: #527EFF;--gf-color-secondary: #fff;--gf-color-secondary-rgb: 255, 255, 255;--gf-color-secondary-contrast: #112337;--gf-color-secondary-contrast-rgb: 17, 35, 55;--gf-color-secondary-darker: #F5F5F5;--gf-color-secondary-lighter: #FFFFFF;--gf-color-out-ctrl-light: rgba(17, 35, 55, 0.1);--gf-color-out-ctrl-light-rgb: 17, 35, 55;--gf-color-out-ctrl-light-darker: rgba(104, 110, 119, 0.35);--gf-color-out-ctrl-light-lighter: #F5F5F5;--gf-color-out-ctrl-dark: #585e6a;--gf-color-out-ctrl-dark-rgb: 88, 94, 106;--gf-color-out-ctrl-dark-darker: #112337;--gf-color-out-ctrl-dark-lighter: rgba(17, 35, 55, 0.65);--gf-color-in-ctrl: #fff;--gf-color-in-ctrl-rgb: 255, 255, 255;--gf-color-in-ctrl-contrast: #112337;--gf-color-in-ctrl-contrast-rgb: 17, 35, 55;--gf-color-in-ctrl-darker: #F5F5F5;--gf-color-in-ctrl-lighter: #FFFFFF;--gf-color-in-ctrl-primary: #204ce5;--gf-color-in-ctrl-primary-rgb: 32, 76, 229;--gf-color-in-ctrl-primary-contrast: #fff;--gf-color-in-ctrl-primary-contrast-rgb: 255, 255, 255;--gf-color-in-ctrl-primary-darker: #001AB3;--gf-color-in-ctrl-primary-lighter: #527EFF;--gf-color-in-ctrl-light: rgba(17, 35, 55, 0.1);--gf-color-in-ctrl-light-rgb: 17, 35, 55;--gf-color-in-ctrl-light-darker: rgba(104, 110, 119, 0.35);--gf-color-in-ctrl-light-lighter: #F5F5F5;--gf-color-in-ctrl-dark: #585e6a;--gf-color-in-ctrl-dark-rgb: 88, 94, 106;--gf-color-in-ctrl-dark-darker: #112337;--gf-color-in-ctrl-dark-lighter: rgba(17, 35, 55, 0.65);--gf-radius: 3px;--gf-font-size-secondary: 14px;--gf-font-size-tertiary: 13px;--gf-icon-ctrl-number: url("data:image/svg+xml,%3Csvg width='8' height='14' viewBox='0 0 8 14' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M4 0C4.26522 5.96046e-08 4.51957 0.105357 4.70711 0.292893L7.70711 3.29289C8.09763 3.68342 8.09763 4.31658 7.70711 4.70711C7.31658 5.09763 6.68342 5.09763 6.29289 4.70711L4 2.41421L1.70711 4.70711C1.31658 5.09763 0.683417 5.09763 0.292893 4.70711C-0.0976311 4.31658 -0.097631 3.68342 0.292893 3.29289L3.29289 0.292893C3.48043 0.105357 3.73478 0 4 0ZM0.292893 9.29289C0.683417 8.90237 1.31658 8.90237 1.70711 9.29289L4 11.5858L6.29289 9.29289C6.68342 8.90237 7.31658 8.90237 7.70711 9.29289C8.09763 9.68342 8.09763 10.3166 7.70711 10.7071L4.70711 13.7071C4.31658 14.0976 3.68342 14.0976 3.29289 13.7071L0.292893 10.7071C-0.0976311 10.3166 -0.0976311 9.68342 0.292893 9.29289Z' fill='rgba(17, 35, 55, 0.65)'/%3E%3C/svg%3E");--gf-icon-ctrl-select: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M0.292893 0.292893C0.683417 -0.097631 1.31658 -0.097631 1.70711 0.292893L5 3.58579L8.29289 0.292893C8.68342 -0.0976311 9.31658 -0.0976311 9.70711 0.292893C10.0976 0.683417 10.0976 1.31658 9.70711 1.70711L5.70711 5.70711C5.31658 6.09763 4.68342 6.09763 4.29289 5.70711L0.292893 1.70711C-0.0976311 1.31658 -0.0976311 0.683418 0.292893 0.292893Z' fill='rgba(17, 35, 55, 0.65)'/%3E%3C/svg%3E");--gf-icon-ctrl-search: url("data:image/svg+xml,%3Csvg width='640' height='640' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M256 128c-70.692 0-128 57.308-128 128 0 70.691 57.308 128 128 128 70.691 0 128-57.309 128-128 0-70.692-57.309-128-128-128zM64 256c0-106.039 85.961-192 192-192s192 85.961 192 192c0 41.466-13.146 79.863-35.498 111.248l154.125 154.125c12.496 12.496 12.496 32.758 0 45.254s-32.758 12.496-45.254 0L367.248 412.502C335.862 434.854 297.467 448 256 448c-106.039 0-192-85.962-192-192z' fill='rgba(17, 35, 55, 0.65)'/%3E%3C/svg%3E");--gf-label-space-y-secondary: var(--gf-label-space-y-md-secondary);--gf-ctrl-border-color: #686e77;--gf-ctrl-size: var(--gf-ctrl-size-md);--gf-ctrl-label-color-primary: #112337;--gf-ctrl-label-color-secondary: #112337;--gf-ctrl-choice-size: var(--gf-ctrl-choice-size-md);--gf-ctrl-checkbox-check-size: var(--gf-ctrl-checkbox-check-size-md);--gf-ctrl-radio-check-size: var(--gf-ctrl-radio-check-size-md);--gf-ctrl-btn-font-size: var(--gf-ctrl-btn-font-size-md);--gf-ctrl-btn-padding-x: var(--gf-ctrl-btn-padding-x-md);--gf-ctrl-btn-size: var(--gf-ctrl-btn-size-md);--gf-ctrl-btn-border-color-secondary: #686e77;--gf-ctrl-btn-bg-color-hover-tertiary: #EBEBEB;--gf-field-img-choice-size: var(--gf-field-img-choice-size-md);--gf-field-img-choice-card-space: var(--gf-field-img-choice-card-space-md);--gf-field-img-choice-check-ind-size: var(--gf-field-img-choice-check-ind-size-md);--gf-field-img-choice-check-ind-icon-size: var(--gf-field-img-choice-check-ind-icon-size-md);--gf-field-pg-steps-number-color: rgba(17, 35, 55, 0.8);}</style><div id='gf_5' class='gform_anchor' tabindex='-1'></div>
+                        <div class='gform_heading'>
+							<p class='gform_required_legend'></p>
+                        </div><form method='post' enctype='multipart/form-data' target='gform_ajax_frame_5' id='gform_5'  action='/space-service/#gf_5' data-formid='5' novalidate>
+                        <div class='gform-body gform_body'><div id='gform_fields_5' class='gform_fields top_label form_sublabel_below description_below validation_below'><div id="field_5_2" class="gfield gfield--type-honeypot gform_validation_container field_sublabel_below gfield--has-description field_description_below field_validation_below gfield_visibility_visible"  ><label class='gfield_label gform-field-label' for='input_5_2'><span class='gform-field-label__text'>Email</span></label><div class='ginput_container'><input name='input_2' id='input_5_2' type='text' value='' autocomplete='new-password'/></div><div class='gfield_description' id='gfield_description_5_2'>This field is for validation purposes and should be left unchanged.</div></div><div id="field_5_1" class="gfield gfield--type-email gfield--input-type-email gfield_contains_required field_sublabel_below gfield--no-description field_description_below hidden_label field_validation_below gfield_visibility_visible"  ><label class='gfield_label gform-field-label' for='input_5_1'><span class='gform-field-label__text'>Email</span><span class="gfield_required"><span class="gfield_required gfield_required_asterisk">*</span></span></label><div class='ginput_container ginput_container_email'>
+                            <input name='input_1' id='input_5_1' type='email' value='' class='large' tabindex='200'  placeholder='Email' aria-required="true" aria-invalid="false"  autocomplete="email"/>
+                        </div></div></div></div>
+        <div class='gform-footer gform_footer top_label'> <button data-text="Submit" type='submit' id='gform_submit_button_5' class="gform_button button swup_gf_ajax_form_submit_button" onclick='gform.submission.handleButtonClick(this);' data-submission-type='submit' tabindex='201'><span>Submit</span>
+        <svg class="newsletter-icon icon" viewBox="0 0 58 58" fill="none" aria-hidden="true" focusable="false">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M41.901 14.2441L42.0629 14.2441H42.901L42.901 43.5716H41.901V15.2441L14.4127 15.2441L14.4127 14.2441H41.901ZM13.9122 42.569L34.0755 22.4022L34.7827 23.1093L14.6194 43.276L13.9122 42.569Z" />
+        </svg></button> <input type='hidden' name='gform_ajax' value='form_id=5&amp;title=&amp;description=&amp;tabindex=200&amp;theme=orbital&amp;hash=7c00f55779b464c02b31b214b04cf576' />
+            <input type='hidden' class='gform_hidden' name='gform_submission_method' data-js='gform_submission_method_5' value='iframe' />
+            <input type='hidden' class='gform_hidden' name='gform_theme' data-js='gform_theme_5' id='gform_theme_5' value='orbital' />
+            <input type='hidden' class='gform_hidden' name='gform_style_settings' data-js='gform_style_settings_5' id='gform_style_settings_5' value='' />
+            <input type='hidden' class='gform_hidden' name='is_submit_5' value='1' />
+            <input type='hidden' class='gform_hidden' name='gform_submit' value='5' />
+            
+            <input type='hidden' class='gform_hidden' name='gform_currency' data-currency='EUR' value='G7bRpCc41QM3O6Md9dPYRk1PeAGY2m9GGTRrJt62i/kRltEgSJe5/PL9QRksG6/vUfOYUdc0uZdMNQ7644En8oyeohGkbKooSgBAsoG9/lOxBhI=' />
+            <input type='hidden' class='gform_hidden' name='gform_unique_id' value='' />
+            <input type='hidden' class='gform_hidden' name='state_5' value='WyJ7XCJnZm9ybV9zdWJtaXNzaW9uX21ldGhvZFwiOltcImQ0NDgxZDRkOTgxNWUzMjYzMjJjN2IxNmFhODE1MjY0XCIsXCJmOGJlZGMwYWE0NmJmMzRkZWNjMjJkMWVmOTMyY2FkN1wiLFwiYzM2MWQyNTFiMmFjMDA1MTYxY2U5NjQzZjA5NjE0YjZcIl0sXCJnZm9ybV90aGVtZVwiOlwiMDhhY2MxNWU1MjgxZThkY2M2N2VmMmIwMThlYzQ5NTJcIixcImdmb3JtX3N0eWxlX3NldHRpbmdzXCI6XCJjZWFhZTQ5YTMxYmFmYzhkOWYxM2FkYTc3YzA2OGQ2YlwiLFwiZm9ybV9pZFwiOlwiMTczZGFmNDEyM2Q5NzRkNTJiY2QwNjE0Y2M2NTY1MmVcIixcInVybFwiOlwiZjBlODZmZTVjNWM0ZTU0NmQxZDljNGQ3OTcwNWIxNjBcIixcInN0YXRlX3RpbWVzdGFtcFwiOlwiNzYzOTU4MzkwNzllNzU4ODIxZjg4OWYwNTFjMjc3MmNcIn0iLCIxYmIzZDk4YzEwZjVkMjlmOWU0YzdkZWZlYjBiYmNhMyIsMTc5Mjg1OTk3M10=' />
+            <input type='hidden' autocomplete='off' class='gform_hidden' name='gform_target_page_number_5' id='gform_target_page_number_5' value='0' />
+            <input type='hidden' autocomplete='off' class='gform_hidden' name='gform_source_page_number_5' id='gform_source_page_number_5' value='1' />
+            <input type='hidden' name='gform_field_values' value='' />
+            
+        </div>
+                        </form>
+                        </div>
+		                <iframe style='display:none;width:0px;height:0px;' src='about:blank' name='gform_ajax_frame_5' id='gform_ajax_frame_5' title='This iframe contains the logic required to handle Ajax powered Gravity Forms.'></iframe>
+		                <script>
+gform.initializeOnLoaded( function() {jQuery('#gform_ajax_frame_5').on('load',function(){var contents = jQuery(this).contents().find('*').html();var is_postback = contents.indexOf('GF_AJAX_POSTBACK') >= 0;if(!is_postback){return;}var form_content = jQuery(this).contents().find('#gform_wrapper_5');var is_confirmation = jQuery(this).contents().find('#gform_confirmation_wrapper_5').length > 0;var is_redirect = contents.indexOf('gformRedirect(){') >= 0;var is_form = form_content.length > 0 && ! is_redirect && ! is_confirmation;var mt = parseInt(jQuery('html').css('margin-top'), 10) + parseInt(jQuery('body').css('margin-top'), 10) + 100;if(is_form){jQuery('#gform_wrapper_5').html(form_content.html());if(form_content.hasClass('gform_validation_error')){jQuery('#gform_wrapper_5').addClass('gform_validation_error');} else {jQuery('#gform_wrapper_5').removeClass('gform_validation_error');}setTimeout( function() { /* delay the scroll by 50 milliseconds to fix a bug in chrome */ jQuery(document).scrollTop(jQuery('#gform_wrapper_5').offset().top - mt); }, 50 );var current_page = jQuery('#gform_source_page_number_5').val();jQuery(document).trigger('gform_page_loaded', [5, current_page]);window['gf_submitting_5'] = false;}else if(!is_redirect){var confirmation_content = jQuery(this).contents().find('.GF_AJAX_POSTBACK').html();if(!confirmation_content){confirmation_content = contents;}jQuery('#gform_wrapper_5').replaceWith(confirmation_content);jQuery(document).scrollTop(jQuery('#gf_5').offset().top - mt);jQuery(document).trigger('gform_confirmation_loaded', [5]);window['gf_submitting_5'] = false;wp.a11y.speak(jQuery('#gform_confirmation_message_5').text());}else{jQuery('#gform_5').append(contents);if(window['gformRedirect']) {gformRedirect();}}jQuery(document).trigger("gform_pre_post_render", [{ formId: "5", currentPage: "current_page", abort: function() { this.preventDefault(); } }]);        if (event && event.defaultPrevented) {                return;        }        const gformWrapperDiv = document.getElementById( "gform_wrapper_5" );        if ( gformWrapperDiv ) {            const visibilitySpan = document.createElement( "span" );            visibilitySpan.id = "gform_visibility_test_5";            gformWrapperDiv.insertAdjacentElement( "afterend", visibilitySpan );        }        const visibilityTestDiv = document.getElementById( "gform_visibility_test_5" );        let postRenderFired = false;        function triggerPostRender() {            if ( postRenderFired ) {                return;            }            postRenderFired = true;            gform.core.triggerPostRenderEvents( 5, current_page );            if ( visibilityTestDiv ) {                visibilityTestDiv.parentNode.removeChild( visibilityTestDiv );            }        }        function debounce( func, wait, immediate ) {            var timeout;            return function() {                var context = this, args = arguments;                var later = function() {                    timeout = null;                    if ( !immediate ) func.apply( context, args );                };                var callNow = immediate && !timeout;                clearTimeout( timeout );                timeout = setTimeout( later, wait );                if ( callNow ) func.apply( context, args );            };        }        const debouncedTriggerPostRender = debounce( function() {            triggerPostRender();        }, 200 );        if ( visibilityTestDiv && visibilityTestDiv.offsetParent === null ) {            const observer = new MutationObserver( ( mutations ) => {                mutations.forEach( ( mutation ) => {                    if ( mutation.type === 'attributes' && visibilityTestDiv.offsetParent !== null ) {                        debouncedTriggerPostRender();                        observer.disconnect();                    }                });            });            observer.observe( document.body, {                attributes: true,                childList: false,                subtree: true,                attributeFilter: [ 'style', 'class' ],            });        } else {            triggerPostRender();        }    } );} );
+</script>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                                                                                    <div class="footer_certification_logos">
+                                                                                <div class="footer_certification_logo">
+                                                <img width="133" height="126" src="https://www.endurosat.com/wp-content/uploads/2026/09/footer-certificates.svg" class="footer_certification_logo_image" alt="" decoding="async" />                                            </div>
+                                                                                                                        <div class="footer_certification_logo">
+                                                <img width="133" height="126" src="https://www.endurosat.com/wp-content/uploads/2026/09/footer-certificates-2.svg" class="footer_certification_logo_image" alt="" decoding="async" />                                            </div>
+                                                                                                            </div>
+                                                                        </div>
+
+                    <div class="inner">
+                        
+                        <div class="inner_grid">
+                                                            <div class="inner_grid">
+                                                                            <div class="ig_inner" data-method="footerExpander">
+                                            <div class="label font_magnetik fw_400 text_uppercase">
+                                                Contacts
+                                                <div class="icon">
+                                                    <span></span>
+                                                    <span></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="expander">
+                                                                                                    <div class="e_inner">
+                                                                                                                    <a data-gtm="gtm--footer--Contact_Us" data-text="Contact Us" class="link font_magnetik fw_300" href="https://www.endurosat.com/contact/"><span>Contact Us</span></a>                                                                                                                    <a data-gtm="gtm--footer--Investment_Inquiry" data-text="Investment Inquiry" class="link font_magnetik fw_300" href="https://www.endurosat.com/contact/?topic=Investment"><span>Investment Inquiry</span></a>                                                                                                                    <a data-gtm="gtm--footer--Careers" data-text="Careers" class="link font_magnetik fw_300" href="https://www.endurosat.com/careers/"><span>Careers</span></a>                                                                                                            </div>
+                                                                                            </div>
+                                        </div>
+                                                                    </div>
+                                    
+                            <div class="ig_inner" data-method="footerExpander">
+                                <div class="label font_magnetik fw_400 text_uppercase">
+                                    Connect
+                                    <div class="icon">
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                </div>
+
+                                <div class="expander">
+                                                                            <div class="e_inner">
+                                                                                            <a data-gtm="gtm--footer--X" data-text="X" class="no_redirect link font_magnetik fw_300" target="_blank" href="https://x.com/endurosat"><span>X</span></a>                                                                                            <a data-gtm="gtm--footer--Linkedin" data-text="LinkedIn" class="no_redirect link font_magnetik fw_300" target="_blank" href="https://www.linkedin.com/company/endurosat"><span>LinkedIn</span></a>                                                                                            <a data-gtm="gtm--footer--Meta" data-text="Facebook" class="no_redirect link font_magnetik fw_300" target="_blank" href="https://www.facebook.com/EnduroSat"><span>Facebook</span></a>                                                                                            <a data-gtm="gtm--footer--Youtube" data-text="YouTube" class="no_redirect link font_magnetik fw_300" target="_blank" href="https://www.youtube.com/@endurosat/"><span>YouTube</span></a>                                                                                            <a data-gtm="gtm--footer--Instagram" data-text="Instagram" class="no_redirect link font_magnetik fw_300" target="_blank" href="https://www.instagram.com/endurosat"><span>Instagram</span></a>                                                                                    </div>
+                                                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+                <div class="line"></div>
+            
+            <div class="bottom_grid">
+                <div class="copy font_magnetik fw_300">
+                    &#169; 2026 All rights reserved.
+                </div>
+                
+                <a data-gtm="gtm--footer--Legal_Privacy" data-text="Legal &amp; Privacy" class="copy font_magnetik fw_300" href="https://www.endurosat.com/legal/"><span>Legal &amp; Privacy</span></a>                <a data-gtm="gtm--footer--Terms_of_Use" data-text="Terms of Use" class="copy font_magnetik fw_300" href="https://www.endurosat.com/terms-and-conditions/"><span>Terms of Use</span></a>            </div>
+        </div>
+    </footer>
+</div>            
+    <script type="module" src="https://www.endurosat.com/wp-content/themes/endurosat/60fps/space-service/assets/index-_YS_VWF2.js"></script>
+</body>
+</html>

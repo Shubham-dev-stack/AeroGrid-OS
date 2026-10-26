@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Canvas } from "@react-three/fiber";
+import * as THREE from "three";
 import Scene from "./Scene";
 
 export default function CanvasContainer() {
@@ -18,6 +19,13 @@ export default function CanvasContainer() {
           powerPreference: "high-performance",
           stencil: false,
           depth: true,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.15,
+        }}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.15;
+          gl.outputColorSpace = THREE.SRGBColorSpace;
         }}
         dpr={[1, 2]}
         camera={{ position: [0, 1.2, 5.8], fov: 45 }}

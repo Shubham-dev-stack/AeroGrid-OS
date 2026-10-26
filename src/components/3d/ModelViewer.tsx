@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
@@ -22,17 +22,18 @@ export default function ModelViewer() {
   const satRocketRef = useRef<THREE.Object3D | null>(null);
   const spaceopsRef = useRef<THREE.Object3D | null>(null);
   const spaceopsWrapperRef = useRef<THREE.Object3D | null>(null);
+  const secondarySatRef = useRef<THREE.Object3D | null>(null);
 
-  // Initial base transforms to restore after animation
+  // Initial base transforms to restore during animation
   const initialP1Pos = useRef(new THREE.Vector3());
   const initialP2Pos = useRef(new THREE.Vector3());
   const initialSatRocketPos = useRef(new THREE.Vector3());
 
-  // Clone scene and setup materials
+  // Clone scene and setup materials + initial sub-mesh isolation
   const clonedScene = useMemo(() => {
     const clone = gltf.scene.clone(true);
 
-    // Locate sub-meshes
+    // Locate target sub-meshes
     detailsFrameRef.current = clone.getObjectByName("details-frame") || null;
     gridRef.current = clone.getObjectByName("grid") || null;
     drawFrameRef.current = clone.getObjectByName("draw-frame") || null;
@@ -42,22 +43,44 @@ export default function ModelViewer() {
     satRocketRef.current = clone.getObjectByName("sat-rocket") || null;
     spaceopsRef.current = clone.getObjectByName("spaceops") || null;
     spaceopsWrapperRef.current = clone.getObjectByName("spaceops-wrapper") || null;
+    secondarySatRef.current = clone.getObjectByName("secondary-sat") || null;
 
     if (falconP1Ref.current) initialP1Pos.current.copy(falconP1Ref.current.position);
     if (falconP2Ref.current) initialP2Pos.current.copy(falconP2Ref.current.position);
     if (satRocketRef.current) initialSatRocketPos.current.copy(satRocketRef.current.position);
 
-    // Apply high-fidelity EnduroSat PBR and blueprint shaders
+    // 1. Initial State: IMMEDIATELY HIDE all sub-meshes and debris
+    if (falconRef.current) falconRef.current.visible = false;
+    if (gridRef.current) gridRef.current.visible = false;
+    if (drawFrameRef.current) drawFrameRef.current.visible = false;
+    if (spaceopsRef.current) spaceopsRef.current.visible = false;
+    if (spaceopsWrapperRef.current) spaceopsWrapperRef.current.visible = false;
+    if (secondarySatRef.current) secondarySatRef.current.visible = false;
+
+    // Traverse and hide all other background debris (embedded earth, secondary payloads, trails, etc.)
     clone.traverse((child) => {
+      const name = (child.name || "").toLowerCase();
+
+      // Permanently hide embedded background debris
+      if (
+        name.includes("earth") ||
+        name.includes("secondary-sat") ||
+        name.includes("trail") ||
+        name.includes("payloads") ||
+        name.includes("buses") ||
+        name.includes("captation")
+      ) {
+        child.visible = false;
+      }
+
       if ((child as THREE.Mesh).isMesh) {
         const mesh = child as THREE.Mesh;
         mesh.castShadow = true;
         mesh.receiveShadow = true;
 
-        const name = (mesh.name || "").toLowerCase();
         const parentName = (mesh.parent?.name || "").toLowerCase();
 
-        // 1. Blueprint Wireframe for details-frame and draw-frame
+        // High-tech blueprint wireframe shader for details-frame and draw-frame
         if (
           parentName.includes("details") ||
           name.includes("details") ||
@@ -68,36 +91,36 @@ export default function ModelViewer() {
           if (mesh.material) {
             const mat = (mesh.material as THREE.Material).clone() as THREE.MeshStandardMaterial;
             mat.color = new THREE.Color("#081226");
-            mat.roughness = 0.25;
-            mat.metalness = 0.9;
-            mat.emissive = new THREE.Color("#003554");
-            mat.emissiveIntensity = 0.4;
+            mat.roughness = 0.2;
+            mat.metalness = 0.95;
+            mat.emissive = new THREE.Color("#00A1FF");
+            mat.emissiveIntensity = 0.55;
             mesh.material = mat;
           }
         }
 
-        // 2. Isometric Blueprint Floor Grid
+        // Isometric Blueprint Floor Grid
         if (name.includes("grid") || parentName.includes("grid")) {
           mesh.material = new THREE.MeshBasicMaterial({
             color: new THREE.Color("#00A1FF"),
             wireframe: true,
             transparent: true,
-            opacity: 0.65,
+            opacity: 0.6,
           });
         }
 
-        // 3. Rocket Fairing Shells
+        // Rocket Fairing Shells
         if (name.includes("falcon") || parentName.includes("falcon")) {
           if (mesh.material) {
             const mat = (mesh.material as THREE.Material).clone() as THREE.MeshStandardMaterial;
-            mat.color = new THREE.Color("#1a202c");
-            mat.roughness = 0.3;
-            mat.metalness = 0.85;
+            mat.color = new THREE.Color("#141923");
+            mat.roughness = 0.25;
+            mat.metalness = 0.9;
             mesh.material = mat;
           }
         }
 
-        // 4. Futuristic 3D Glass HUD SpaceOps
+        // Futuristic 3D Glass HUD SpaceOps
         if (name.includes("panel") || parentName.includes("spaceops") || name.includes("interface")) {
           mesh.material = new THREE.MeshStandardMaterial({
             color: new THREE.Color("#001b33"),
@@ -106,7 +129,7 @@ export default function ModelViewer() {
             transparent: true,
             opacity: 0.88,
             emissive: new THREE.Color("#00A1FF"),
-            emissiveIntensity: 0.6,
+            emissiveIntensity: 0.7,
           });
         }
       }
@@ -115,8 +138,8 @@ export default function ModelViewer() {
     return clone;
   }, [gltf]);
 
-  // Cinematic 5-stage timeline execution in 60 FPS useFrame
-  useFrame((state, delta) => {
+  // Strict 3D Sub-Mesh Isolation & Cinematic Stage Choreography
+  useFrame((state) => {
     const p = Math.max(0, Math.min(1, scrollState.progress));
     const t = state.clock.getElapsedTime();
 
@@ -129,15 +152,19 @@ export default function ModelViewer() {
     const satRocket = satRocketRef.current;
     const spaceops = spaceopsRef.current;
     const spaceopsWrapper = spaceopsWrapperRef.current;
+    const secondarySat = secondarySatRef.current;
+
+    // Permanently ensure background debris remains hidden
+    if (secondarySat) secondarySat.visible = false;
 
     // -------------------------------------------------------------
-    // ACT 1 & ACT 2: [0.0 - 0.45] HERO ORBIT & ATMOSPHERE DIVE
+    // ACT 1 & 2: [0.0 - 0.45] HERO & TWO STEPS (Details Satellite Only)
     // -------------------------------------------------------------
     if (p <= 0.45) {
       if (detailsFrame) {
         detailsFrame.visible = true;
-        detailsFrame.position.set(1.69, 2.45 + Math.sin(t * 0.8) * 0.04, 12.69);
-        detailsFrame.rotation.y = t * 0.05 + p * 0.8;
+        detailsFrame.position.set(1.69, 2.45 + Math.sin(t * 0.8) * 0.03, 12.69);
+        detailsFrame.rotation.y = t * 0.04 + p * 0.6;
       }
       if (grid) grid.visible = false;
       if (drawFrame) drawFrame.visible = false;
@@ -147,10 +174,14 @@ export default function ModelViewer() {
     }
 
     // -------------------------------------------------------------
-    // ACT 3: [0.45 - 0.60] EXPLODED BLUEPRINT CAD ASSEMBLY (AIT STAGE)
+    // ACT 3: [0.45 - 0.60] EXPLODED CAD BLUEPRINT (Grid & DrawFrame Only)
     // -------------------------------------------------------------
-    else if (p > 0.45 && p <= 0.6) {
+    else if (p > 0.45 && p <= 0.60) {
       if (detailsFrame) detailsFrame.visible = false;
+      if (falcon) falcon.visible = false;
+      if (spaceops) spaceops.visible = false;
+      if (spaceopsWrapper) spaceopsWrapper.visible = false;
+
       if (grid) {
         grid.visible = true;
         grid.position.set(0.02, -3.0, 41.73);
@@ -160,15 +191,12 @@ export default function ModelViewer() {
         drawFrame.position.set(0.05, -2.87 + Math.sin(t * 0.6) * 0.03, 41.78);
         drawFrame.rotation.y = Math.sin(t * 0.2) * 0.05;
       }
-      if (falcon) falcon.visible = false;
-      if (spaceops) spaceops.visible = false;
-      if (spaceopsWrapper) spaceopsWrapper.visible = false;
     }
 
     // -------------------------------------------------------------
-    // ACT 4: [0.60 - 0.75] ROCKET FAIRING SEPARATION (LAUNCH & DEPLOY)
+    // ACT 4: [0.60 - 0.75] ROCKET LAUNCH & FAIRING SEPARATION (Falcon Only)
     // -------------------------------------------------------------
-    else if (p > 0.6 && p <= 0.75) {
+    else if (p > 0.60 && p <= 0.75) {
       if (detailsFrame) detailsFrame.visible = false;
       if (grid) grid.visible = false;
       if (drawFrame) drawFrame.visible = false;
@@ -185,9 +213,8 @@ export default function ModelViewer() {
           if (falconP2) falconP2.position.copy(initialP2Pos.current);
           if (satRocket) satRocket.position.copy(initialSatRocketPos.current);
         } else {
-          // Smooth fairing outward separation curve
           const sepProgress = Math.min(1, (p - 0.67) / 0.07);
-          const easeSep = 1 - Math.pow(1 - sepProgress, 3); // Cubic ease out
+          const easeSep = 1 - Math.pow(1 - sepProgress, 3); // Smooth cubic ease out
 
           if (falconP1) {
             falconP1.position.x = initialP1Pos.current.x - easeSep * 1.8;
@@ -198,7 +225,6 @@ export default function ModelViewer() {
             falconP2.rotation.z = easeSep * 0.35;
           }
           if (satRocket) {
-            // Satellite emerges forward out of fairing
             satRocket.position.y = initialSatRocketPos.current.y + easeSep * 2.4;
             satRocket.rotation.y = t * 0.2;
           }
@@ -207,9 +233,9 @@ export default function ModelViewer() {
     }
 
     // -------------------------------------------------------------
-    // ACT 5: [0.75 - 0.90] 3D FLOATING GLASS CONTROL PANEL (SPACE OPS)
+    // ACT 5: [0.75 - 0.88] 3D GLASS SPACEOPS HUD (SpaceOps Only)
     // -------------------------------------------------------------
-    else if (p > 0.75 && p <= 0.9) {
+    else if (p > 0.75 && p <= 0.88) {
       if (detailsFrame) detailsFrame.visible = false;
       if (grid) grid.visible = false;
       if (drawFrame) drawFrame.visible = false;
@@ -226,7 +252,7 @@ export default function ModelViewer() {
     }
 
     // -------------------------------------------------------------
-    // ACT 6: [0.90 - 1.0] HIGH ORBIT CONSTELLATION & COST
+    // ACT 6: [0.88 - 1.0] HIGH ORBIT CONSTELLATION & CALCULATOR
     // -------------------------------------------------------------
     else {
       if (grid) grid.visible = false;
@@ -237,8 +263,8 @@ export default function ModelViewer() {
 
       if (detailsFrame) {
         detailsFrame.visible = true;
-        detailsFrame.position.set(0.63, 8.91 + Math.sin(t * 0.8) * 0.05, 20.92);
-        detailsFrame.rotation.y = t * 0.08;
+        detailsFrame.position.set(0.63, 8.91 + Math.sin(t * 0.8) * 0.04, 20.92);
+        detailsFrame.rotation.y = t * 0.06;
       }
     }
   });

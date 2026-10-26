@@ -43,8 +43,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable} dark bg-black`}>
-      <body className="min-h-screen bg-black text-white font-sans antialiased selection:bg-aerogrid-cyan/30 selection:text-aerogrid-glow">
-        <div className="fixed inset-0 pointer-events-none scanline-overlay z-50 opacity-20" />
+      <body
+        className="min-h-screen bg-black text-white font-sans antialiased selection:bg-aerogrid-cyan/30 selection:text-aerogrid-glow"
+        style={{ margin: 0, padding: 0, overflow: "hidden", backgroundColor: "#000" }}
+      >
         {children}
       </body>
     </html>
