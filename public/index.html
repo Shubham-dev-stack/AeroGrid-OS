@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroGrid OS - Autonomous Space & Mission Operations Platform</title>
+    <title>AeroGrid OS - Autonomous Sovereign Constellation & Space Service Platform</title>
     <link rel="stylesheet" href="https://www.endurosat.com/wp-content/themes/endurosat/assets/css/style.min.css">
     <link rel="stylesheet" href="/assets/index-BY930IXB.css">
     <style>
@@ -18,20 +18,326 @@
         window.new_space_service_base_url = '';
         window.new_homepage_base_url = '';
     </script>
+
+    <style>
+        /* AeroGrid Custom Aerospace UI Additions */
+        .aerogrid-ticker {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 36px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(0, 161, 255, 0.3);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            font-family: monospace;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            color: #787A85;
+            pointer-events: auto;
+        }
+        .aerogrid-ticker-inner {
+            display: flex;
+            white-space: nowrap;
+            animation: tickerSlide 35s linear infinite;
+            gap: 40px;
+        }
+        @keyframes tickerSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-highlight {
+            color: #00A1FF;
+            font-weight: 700;
+        }
+        .ticker-green {
+            color: #00FF88;
+        }
+
+        /* Hero Value Metric Pills */
+        .aerogrid-pills-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+        .aerogrid-pill-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            background: rgba(7, 11, 19, 0.7);
+            border: 1px solid rgba(0, 161, 255, 0.35);
+            border-radius: 9999px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .aerogrid-pill-item:hover {
+            border-color: #00A1FF;
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 161, 255, 0.25);
+        }
+        .pill-tag {
+            font-family: monospace;
+            font-size: 11px;
+            color: #787A85;
+            background: rgba(255,255,255,0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .pill-number {
+            font-family: 'Magnetik', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: #00A1FF;
+            letter-spacing: -0.02em;
+        }
+        .pill-text {
+            font-family: 'Magnetik', sans-serif;
+            font-size: 13px;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Case Studies Section */
+        .aerogrid-case-studies {
+            padding: 100px 40px;
+            max-width: 1300px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        .case-studies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+        .case-card {
+            background: rgba(13, 20, 32, 0.7);
+            border: 1px solid rgba(35, 35, 44, 0.8);
+            border-radius: 12px;
+            padding: 32px;
+            backdrop-filter: blur(16px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00A1FF, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .case-card:hover {
+            border-color: rgba(0, 161, 255, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 161, 255, 0.1);
+        }
+        .case-card:hover::before {
+            opacity: 1;
+        }
+        .case-tag {
+            font-family: monospace;
+            font-size: 11px;
+            color: #00A1FF;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+        .case-title {
+            font-family: 'Magnetik', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+        .case-meta {
+            font-size: 13px;
+            color: #787A85;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .case-stat-row {
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 16px;
+            margin-top: 16px;
+        }
+        .case-stat-val {
+            font-family: 'Magnetik', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #00A1FF;
+        }
+        .case-stat-lbl {
+            font-size: 11px;
+            color: #787A85;
+            text-transform: uppercase;
+            font-family: monospace;
+        }
+
+        /* Interactive Mission Simulator Modal */
+        #simulator-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(24px);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+        .simulator-content {
+            background: #080D17;
+            border: 1px solid rgba(0, 161, 255, 0.3);
+            border-radius: 16px;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            box-shadow: 0 0 60px rgba(0, 161, 255, 0.2);
+            position: relative;
+        }
+        .sim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .sim-close-btn {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-family: monospace;
+            transition: all 0.2s;
+        }
+        .sim-close-btn:hover {
+            border-color: #FC6A18;
+            color: #FC6A18;
+        }
+        .sim-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+        @media (max-width: 768px) {
+            .sim-grid { grid-template-columns: 1fr; }
+        }
+        .sim-group {
+            margin-bottom: 24px;
+        }
+        .sim-label {
+            font-family: monospace;
+            font-size: 12px;
+            color: #00A1FF;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .sim-select, .sim-slider {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Magnetik', sans-serif;
+            font-size: 14px;
+        }
+        .sim-card-result {
+            background: rgba(0, 161, 255, 0.05);
+            border: 1px solid rgba(0, 161, 255, 0.25);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .sim-big-stat {
+            font-family: 'Magnetik', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            color: #00A1FF;
+            margin: 8px 0;
+        }
+        .sim-comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        .sim-comparison-table th, .sim-comparison-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sim-comparison-table th {
+            color: #787A85;
+        }
+        .sim-cta-action {
+            margin-top: 24px;
+            display: flex;
+            gap: 16px;
+        }
+        .sim-btn-primary {
+            flex: 1;
+            padding: 14px 24px;
+            background: #00A1FF;
+            color: #000;
+            border: none;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-family: 'Magnetik', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .sim-btn-primary:hover {
+            background: #DAF2FF;
+            transform: translateY(-2px);
+        }
+    </style>
+
 </head>
 <body class="preloaded loaded">
-<header style="position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; pointer-events: auto; background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);">
+<header style="position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; pointer-events: auto; background: linear-gradient(180deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%);">
     <div style="display: flex; align-items: center; gap: 12px;">
         <span style="font-family: 'Magnetik', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #fff;">AEROGRID<span style="color: #00A1FF;">.</span></span>
-        <span style="font-size: 10px; font-family: monospace; padding: 3px 8px; border-radius: 9999px; background: rgba(0,161,255,0.15); border: 1px solid rgba(0,161,255,0.4); color: #00A1FF; font-weight: 600; text-transform: uppercase;">Mission Ready v3.8</span>
+        <span style="font-size: 10px; font-family: monospace; padding: 3px 8px; border-radius: 9999px; background: rgba(0,161,255,0.15); border: 1px solid rgba(0,161,255,0.4); color: #00A1FF; font-weight: 600; text-transform: uppercase;">SOVEREIGN ORBIT · 180 DAYS</span>
     </div>
-    <div style="display: flex; gap: 32px; font-family: 'Magnetik', sans-serif; font-size: 14px; text-transform: uppercase; font-weight: 500; letter-spacing: 0.05em;">
-        <a href="#fps-app" style="color: #fff; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#fff'">Space Service</a>
+    <div style="display: flex; gap: 28px; font-family: 'Magnetik', sans-serif; font-size: 13px; text-transform: uppercase; font-weight: 500; letter-spacing: 0.05em;">
+        <a href="#fps-app" style="color: #fff; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#fff'">Constellation</a>
         <a href="#payloads" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Payloads</a>
-        <a href="#cost" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Cost Calculator</a>
+        <a href="#spaceops" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Space-Ops</a>
+        <a href="#costing" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Pricing Model</a>
+        <a href="#case-studies" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Missions</a>
     </div>
-    <div style="display: flex; gap: 16px; align-items: center;">
-        <a href="https://github.com/Shubham-dev-stack/AeroGrid-OS" target="_blank" style="display: flex; align-items: center; gap: 8px; font-family: 'Magnetik', sans-serif; font-size: 13px; text-transform: uppercase; color: #fff; text-decoration: none; padding: 10px 20px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); transition: all 0.2s;" onmouseover="this.style.borderColor='#00A1FF'; this.style.color='#00A1FF'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.color='#fff'">
+    <div style="display: flex; gap: 12px; align-items: center;">
+        <button onclick="openConstellationSimulator()" style="font-family: 'Magnetik', sans-serif; font-size: 12px; text-transform: uppercase; font-weight: 700; color: #000; background: #00A1FF; border: none; padding: 8px 18px; border-radius: 9999px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#DAF2FF'" onmouseout="this.style.background='#00A1FF'">
+            Simulate Constellation
+        </button>
+        <a href="https://github.com/Shubham-dev-stack/AeroGrid-OS" target="_blank" style="display: flex; align-items: center; gap: 6px; font-family: 'Magnetik', sans-serif; font-size: 12px; text-transform: uppercase; color: #fff; text-decoration: none; padding: 8px 16px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); transition: all 0.2s;" onmouseover="this.style.borderColor='#00A1FF'; this.style.color='#00A1FF'" onmouseout="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.color='#fff'">
             GitHub
         </a>
     </div>
@@ -58,19 +364,14 @@
     <canvas id="fps-webgl-canvas"></canvas>
     <div class="fps-scroll-wrapper"></div>
 
-            <a class="fps-button fps-fixed"
-            href="https://configurator.endurosat.com/"
-                            data-gtm="gtm--body--button"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    data-text="Design your mission">
-            <span>Deploy Your Fleet</span>
-            <div class="fps-square">
-                <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9996 0.999952L13.9996 15L14.9996 15L14.9996 -4.7981e-05L14.5713 -4.73067e-05H13.9996L0.428759 -4.7981e-05L0.428759 0.999952L13.9996 0.999952ZM0.707197 15.0217L3.61672e-05 14.3147L10.3131 4.00009L11.0202 4.70714L0.707197 15.0217Z" fill="black" />
-                </svg>
-            </div>
-        </a>
+            <button class="fps-button fps-fixed" onclick="openConstellationSimulator()" style="cursor: pointer; border: none; background: #00A1FF; font-family: inherit;">
+      <span style="color: #000; font-weight: 700;">Simulate Constellation</span>
+      <div class="fps-square" style="background: #fff;">
+          <svg width="15" height="16" viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M13.9996 0.999952L13.9996 15L14.9996 15L14.9996 -4.7981e-05L14.5713 -4.73067e-05H13.9996L0.428759 -4.7981e-05L0.428759 0.999952L13.9996 0.999952ZM0.707197 15.0217L3.61672e-05 14.3147L10.3131 4.00009L11.0202 4.70714L0.707197 15.0217Z" fill="black" />
+          </svg>
+      </div>
+  </button>
     
     <div class="fps-navigation-bar">
         <div class="fps-navigation-bar-inner">
@@ -178,24 +479,40 @@
 
     <div id="fps-root">
         <section class="fps-frame fps-hero fps-section-left fps-section-center" data-frame="Hero" data-first data-scroll-height="50svh" data-first>
-            <div>
-                <div class="fps-pretitle fps-text-27 fps-color-blue">AUTONOMOUS DEPLOYMENT. FIXED COST ARCHITECTURE</div>
-                <h1 class="fps-title-main fps-text-135">AEROSPACE MISSIONS <br />
-MADE AUTONOMOUS</h1>
+    <div>
+        <div class="fps-pretitle fps-text-27 fps-color-blue" style="letter-spacing: 0.15em;">ORBIT ON DEMAND. OWNED BY YOU.</div>
+        <h1 class="fps-title-main fps-text-135" style="line-height: 0.95;">DEPLOY A SOVEREIGN <br />CONSTELLATION IN 180 DAYS.</h1>
+        <div class="aerogrid-pills-row">
+            <div class="aerogrid-pill-item">
+                <span class="pill-tag">01</span>
+                <span class="pill-number">180 DAYS</span>
+                <span class="pill-text">Contract to first light</span>
             </div>
-        </section>
+            <div class="aerogrid-pill-item">
+                <span class="pill-tag">02</span>
+                <span class="pill-number">−91%</span>
+                <span class="pill-text">Total cost vs legacy</span>
+            </div>
+            <div class="aerogrid-pill-item">
+                <span class="pill-tag">03</span>
+                <span class="pill-number">10 Hz</span>
+                <span class="pill-text">Live telemetry stream to API</span>
+            </div>
+        </div>
+    </div>
+</section>
 
         <section class="fps-frame fps-problem fps-section-reveal" data-frame="TextReveal" data-no-transition data-second>
             <div class="fps-inner">
                 <p class="fps-pretitle fps-text-27 fps-color-orange">The Challenge</p>
-                <h2 class="fps-subtitle fps-text-59">Traditional fleet operations are prohibitively expensive, slow to deploy, have fragmented supply chains, and carry high operational risks.</h2>
+                <h2 class="fps-subtitle fps-text-59">Traditional space programs cost $38M+ per satellite, take 4–6 years to first launch, and suffer constant programmatic delays and cost overruns.</h2>
             </div>
         </section>
 
         <section class="fps-frame fps-vision fps-section-reveal" data-scroll-height="200svh" data-frame="TextReveal" data-no-transition>
             <div class="fps-inner">
                 <p class="fps-pretitle fps-text-27 fps-color-blue">The Solution</p>
-                <h2 class="fps-subtitle fps-text-59">Standardized autonomous swarms and orbital edge networks enable highly profitable, continuous mission operations.</h2>
+                <h2 class="fps-subtitle fps-text-59">From mission definition to live API in two quarters. Standardized modular payloads, rideshare launch, and autonomous orbit insertion under one fixed-cost contract.</h2>
             </div>
         </section>
 
@@ -216,13 +533,13 @@ MADE AUTONOMOUS</h1>
                     <div class="fps-separator"><span></span></div>
                     <div class="fps-spacer"></div>
                     <div class="fps-item-center">
-                        <span class="fps-title-big fps-text-135">In under 6 minutes</span>
+                        <span class="fps-title-big fps-text-135">In just 180 days (6 Months)</span>
                         <div class="fps-progress-bar">
                             <div class="fps-progress-bar-bg">
                                 <div class="fps-progress-bar-fill"></div>
                             </div>
-                            <div class="fps-progress-bar-text fps-left fps-text-18 fps-color-blue">0 minutes</div>
-                            <div class="fps-progress-bar-text fps-right fps-text-18 fps-color-blue">6 minutes</div>
+                            <div class="fps-progress-bar-text fps-left fps-text-18 fps-color-blue">0 days</div>
+                            <div class="fps-progress-bar-text fps-right fps-text-18 fps-color-blue">180 days</div>
 
                         </div>
                     </div>
@@ -331,8 +648,7 @@ MADE AUTONOMOUS</h1>
         </section>
 
         <section class="fps-frame fps-subsection" data-nav-key="design" data-nav-key-progress="0.5;1" data-frame="SubSection" data-transition-horizontal="leave" data-scroll-speed=".7" data-scroll-height="200svh">
-            <h2 class="fps-text-59">Mission <br />
-Analysis & Design</h2>
+            <h2 class="fps-text-59">STAGE 01 <br />Mission Definition & Orbit Synthesis <br /><span style="font-size: 22px; color: #00A1FF; font-family: monospace;">T+0 to T+3 weeks · Fixed Quote in 21 Days</span></h2>
         </section>
 
         <section class="fps-frame fps-subsection" data-nav-key="ait" data-transition-horizontal="both" data-frame="SubSection" data-scroll-speed=".7" data-scroll-height="200svh">
@@ -350,8 +666,7 @@ Commissioning</h2>
             <div class="fps-inner">
                 <div class="fps-step-item fps-item-right">
                                             <span class="fps-step-number fps-text-27 fps-color-grey"><span>02</span></span>
-                                        <h3 class="fps-step-title fps-text-135"><span>Receive live telemetry</span></h3>
-                                        <p class="fps-title-small fps-text-27 fps-color-grey"><span>&amp; telemetry streams</span></p>
+                                        <h3 class="fps-step-title fps-text-135"><span>STAGE 04</span></h3><p class="fps-title-small fps-text-27 fps-color-grey"><span>Live API Downlink (T+24 Weeks Onward)</span></p>
                 </div>
             </div>
         </section>
@@ -359,34 +674,34 @@ Commissioning</h2>
         <section class="fps-frame fps-section-center fps-cloud" data-frame="Cloud" data-no-transition>
             <div class="fps-inner" data-scroll-speed=".8">
                 <h3 class="fps-title-small fps-text-27 fps-color-blue">Cloud-based</h3>
-                <h2 class="fps-title-big fps-text-135">mission operations hub</h2>
+                <h2 class="fps-title-big fps-text-135">Autonomous Space-Ops Hub</h2>
             </div>
         </section>
 
         <section class="fps-frame fps-section-top fps-subsection" data-nav-key="command" data-transition-horizontal="both" data-frame="SubSection" data-top-nav-key="spaceops">
-            <h2 class="fps-text-59 ">Command your fleet with event-driven autonomous tasking</h2>
+            <h2 class="fps-text-59 ">Tasking requests compiled into on-orbit execution schedules in under 90 seconds</h2>
         </section>
 
         <section class="fps-frame fps-section-top fps-section-right-dk fps-subsection" data-nav-key="monitor" data-transition-horizontal="both" data-frame="SubSection">
-            <h2 class="fps-text-59 ">Monitor dashboards, live video streams &amp; real-time telemetry</h2>
+            <h2 class="fps-text-59 ">Multi-polar ground passes across SvalSat, Inuvik, and Punta Arenas tracking stations</h2>
         </section>
 
         <section class="fps-frame fps-section-top fps-section-right-dk fps-subsection" data-nav-key="access" data-transition-horizontal="enter" data-frame="SubSection" data-scroll-speed=".7">
-            <h2 class="fps-text-59">Access high-frequency data through cloud and API interfaces</h2>
+            <h2 class="fps-text-59">Encrypted X-band downlinks delivered to your cloud bucket or API in under 5 minutes</h2>
         </section>
 
         <section class="fps-frame fps-title-subtitle fps-section-right" data-nav-key="encryption" data-top-nav-key="technology" data-scroll-height="200svh" data-frame="TitleSubtitle" data-transition-horizontal="leave">
             <div class="fps-inner">
                 <h2 class="fps-text-135">Military <br />
 grade</h2>
-                <h3 class="fps-text-27 fps-color-blue">encryption</h3>
+                <h3 class="fps-text-27 fps-color-blue">CCSDS AES-256-GCM</h3>
             </div>
         </section>
 
         <section class="fps-frame fps-title-subtitle" data-nav-key="scalability" data-frame="TitleSubtitle" data-scroll-height="200svh" data-transition-horizontal="both" data-scroll-speed=".8">
             <div class="fps-inner">
                 <h2 class="fps-text-135">Scalable</h2>
-                <h3 class="fps-text-27 fps-color-blue">60 Sats per month</h3>
+                <h3 class="fps-text-27 fps-color-blue">1 Sat / 6 Days Cadence</h3>
             </div>
         </section>
 
@@ -394,12 +709,12 @@ grade</h2>
             <div class="fps-inner">
                 <h2 class="fps-text-135">Software <br />
 FLEXIBLE</h2>
-                <h3 class="fps-text-27 fps-color-blue">Satellites</h3>
+                <h3 class="fps-text-27 fps-color-blue">64 TOPS Edge-AI (NeuralCore)</h3>
             </div>
         </section>
 
         <section class="fps-frame fps-section-top fps-subsection" data-transition-horizontal="both" data-nav-key="modular" data-scroll-height="150svh" data-frame="SubSection">
-            <h2 class="fps-text-59  fps-large">Modular design, configurable with no additional engineering</h2>
+            <h2 class="fps-text-59  fps-large">Standardized 28V / SpaceWire / Ethernet bus interface — zero custom NRE</h2>
         </section>
 
         <section class="fps-frame fps-section-top fps-subsection fps-panel-infos" data-nav-key="flexibility" data-frame="Performance" data-scroll-speed=".7" data-scroll-height="180svh" data-transition-horizontal="enter">
@@ -410,25 +725,25 @@ in-flight</h2>
                 <div class="fps-panel-line"></div>
                 <ul class="fps-infos">
                     <li>
-                        <span class="fps-info-name">Charge Rate</span>
-                        <span class="fps-info-value fps-info-ampere">4.2A</span>
+                        <span class="fps-info-name">Orbital Velocity</span>
+                        <span class="fps-info-value fps-info-ampere">7.605 km/s (520 km SSO)</span>
                     </li>
                     <li>
-                        <span class="fps-info-name">Max DoD per Sortie</span>
+                        <span class="fps-info-name">Battery DoD</span>
                         <div class="fps-info-value">
                             <div class="fps-progress-wrapper">
                                 <div class="fps-progress-bar fps-info-dod-bar"></div>
                             </div>
-                            <span class="fps-info-dod">28% (Nominal)</span>
+                            <span class="fps-info-dod">18% (32% SAR Peak)</span>
                         </div>
                     </li>
                     <li>
-                        <span class="fps-info-name">Data Downlink</span>
-                        <span class="fps-info-value fps-info-data">120 Mbps (AES-256 Encrypted)</span>
+                        <span class="fps-info-name">X-Band Downlink</span>
+                        <span class="fps-info-value fps-info-data">800 Mbps (1.2 Gbps Peak)</span>
                     </li>
                     <li>
-                        <span class="fps-info-name">Tx Power</span>
-                        <span class="fps-info-value fps-info-power">32 dBm</span>
+                        <span class="fps-info-name">Solar Bus Output</span>
+                        <span class="fps-info-value fps-info-power">640 W Peak (28V Regulated)</span>
                     </li>
                 </ul>
             </div>
@@ -438,7 +753,7 @@ in-flight</h2>
             <div class="fps-inner">
                 <div class="fps-cost-title-wrapper">
                     <h2 class="fps-cost-title fps-text-135">Guaranteed Turnkey Pricing</h2>
-                    <h3 class="fps-cost-subtitle fps-text-27 fps-color-blue">Transparent pricing</h3>
+                    <h3 class="fps-cost-subtitle fps-text-27 fps-color-blue">$3.2M / Satellite All-In · 5 Years Ops Included</h3>
                 </div>
                 <div class="fps-cost-wrapper">
                     <div class="fps-cost-item fps-left">
@@ -474,20 +789,20 @@ in-flight</h2>
 
         <section class="fps-frame fps-total-cost" data-frame="TotalCost" data-nav-key="datacost" data-scroll-height="500svh" data-snap-points="0.25;1;1.5" data-no-transition style="--active-color: #FC6A18;">
             <div class="fps-inner">
-                <h2 class="fps-total-title fps-text-18 fps-color-grey">Hourly mission operations cost</h2>
+                <h2 class="fps-total-title fps-text-18 fps-color-grey">Constellation Economics</h2>
                 <div class="fps-total-center">
-                    <span class="fps-center-pretitle fps-text-27">Aircraft vs autonomous operations</span>
+                    <span class="fps-center-pretitle fps-text-27">AeroGrid Turnkey vs Legacy Space Program</span>
                     <span class="fps-center-number">
-                        <div class="fps-center-number-content">2,500</div>
-                        <div class="fps-center-number-one">45</div>
+                        <div class="fps-center-number-content">3.2M</div>
+                        <div class="fps-center-number-one">38M</div>
                     </span>
-                    <span class="fps-center-unit fps-text-27"><span>/ hr</span></span>
+                    <span class="fps-center-unit fps-text-27"><span>/ Satellite</span></span>
                 </div>
                 <div class="fps-scroll-wrapper">
                     <div class="fps-scroll-content">
                         <ul>
-                            <li class="fps-active">Traditional Aircraft: $2,500 / hr</li>
-                            <li>AeroGrid Autonomous: $45 / hr (98.2% Savings)</li>
+                            <li class="fps-active">AeroGrid Fixed Turnkey: $3.2M / Sat (Build + Launch + 5-Yr Ops)</li>
+                            <li>Legacy Space Program: $38M / Sat + $25M Ground (91% - 95% Savings)</li>
                         </ul>
                         <div class="fps-scrollbar">
                             <span class="fps-progress-bar"></span>
@@ -501,15 +816,10 @@ in-flight</h2>
         <section class="fps-frame fps-section-center fps-orbit-today" data-frame="Orbit" data-no-transition
             data-scroll-height="250svh">
             <div class="fps-inner">
-                <h2 class="fps-title-main fps-text-135">Deploy your mission fleet today</h2>
-                                    <a class="fps-button fps-last-section-button"
-                        href="https://configurator.endurosat.com/"
-                                                    data-gtm="gtm--body--button"
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                        data-text="Design your mission">
-                        <span>Launch Mission Configurator</span>
-                    </a>
+                <h2 class="fps-title-main fps-text-135">Deploy your sovereign constellation in 180 days</h2>
+                                    <button class="fps-button fps-last-section-button" onclick="openConstellationSimulator()" style="cursor: pointer; border: none; font-family: inherit;">
+      <span>Simulate Your Constellation</span>
+   </button>
                             </div>
         </section>
 
@@ -818,5 +1128,311 @@ gform.initializeOnLoaded( function() {jQuery('#gform_ajax_frame_5').on('load',fu
     </footer>
 </div>            
     <script type="module" src="/assets/index-_YS_VWF2.js"></script>
+
+<!-- REAL-WORLD CASE STUDIES SECTION -->
+<div id="case-studies" class="aerogrid-case-studies">
+    <div style="text-align: center;">
+        <span class="case-tag">PROVEN MISSION ARCHITECTURES</span>
+        <h2 style="font-family: 'Magnetik', sans-serif; font-size: clamp(32px, 5vw, 56px); font-weight: 800; color: #fff; margin: 0 0 16px 0; text-transform: uppercase;">
+            Operational Case Studies
+        </h2>
+        <p style="color: #787A85; font-size: 16px; max-width: 700px; margin: 0 auto;">
+            Validated deployment architectures delivering continuous revisit, tactical latency, and sovereign data ownership.
+        </p>
+    </div>
+
+    <div class="case-studies-grid">
+        <!-- Case 1 -->
+        <div class="case-card">
+            <span class="case-tag">TACTICAL MARITIME & BORDER DEFENSE</span>
+            <h3 class="case-title">NATO Member EEZ Surveillance</h3>
+            <p class="case-meta">
+                Responsible for 1.2M km² Exclusive Economic Zone. Integrated 12 satellites (8× Sentinel-SAR X1, 4× HyperEye-V2) equipped with NeuralCore-E2 edge-AI processors.
+            </p>
+            <div class="case-stat-row">
+                <div>
+                    <div class="case-stat-val">60 Min</div>
+                    <div class="case-stat-lbl">Full EEZ Revisit</div>
+                </div>
+                <div>
+                    <div class="case-stat-val">&lt; 4 Min</div>
+                    <div class="case-stat-lbl">Alert Latency</div>
+                </div>
+                <div>
+                    <div class="case-stat-val">94%</div>
+                    <div class="case-stat-lbl">Dark Vessel Detect</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="case-card">
+            <span class="case-tag">CRITICAL INFRASTRUCTURE & DISASTER</span>
+            <h3 class="case-title">National Forest & Grid Consortium</h3>
+            <p class="case-meta">
+                Continuous coverage of 340,000 km² forest and power grid terrain using 24 satellites (12× ThermoScan-L3, 8× HyperEye-V2, 4× Sentinel-SAR X1).
+            </p>
+            <div class="case-stat-row">
+                <div>
+                    <div class="case-stat-val">30 Min</div>
+                    <div class="case-stat-lbl">Thermal Revisit</div>
+                </div>
+                <div>
+                    <div class="case-stat-val">&lt; 6 Min</div>
+                    <div class="case-stat-lbl">Ignition Detection</div>
+                </div>
+                <div>
+                    <div class="case-stat-val">100 m²</div>
+                    <div class="case-stat-lbl">Min Ignition Size</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="case-card">
+            <span class="case-tag">ENVIRONMENTAL & COMMODITY INTEL</span>
+            <h3 class="case-title">Global Agri-Insurance Group</h3>
+            <p class="case-meta">
+                Monitoring 3.1M hectares across three continents with 4× HyperEye-V2 satellites. Delivering field-level crop stress and canopy indices directly via API.
+            </p>
+            <div class="case-stat-row">
+                <div>
+                    <div class="case-stat-val">6 Hours</div>
+                    <div class="case-stat-lbl">Daylight Revisit</div>
+                </div>
+                <div>
+                    <div class="case-stat-val">±4%</div>
+                    <div class="case-stat-lbl">Yield Forecast</div>
+                </div>
+                <div>
+                    <div class="case-stat-val">48 Hrs</div>
+                    <div class="case-stat-lbl">Claims Verification</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LIVE TELEMETRY TICKER -->
+<div class="aerogrid-ticker">
+    <div class="aerogrid-ticker-inner">
+        <span><span class="ticker-green">● LINK: NOMINAL</span></span>
+        <span>SECURITY: <span class="ticker-highlight">AES-256-GCM (LOCKED)</span></span>
+        <span>ORBIT: <span class="ticker-highlight">520 KM SSO (97.5° INCLINATION)</span></span>
+        <span>VELOCITY: <span class="ticker-highlight">7.605 KM/S (94.9 MIN PERIOD)</span></span>
+        <span>X-BAND DOWNLINK: <span class="ticker-highlight">800 MBPS (DVB-S2X)</span></span>
+        <span>SOLAR BUS: <span class="ticker-highlight">640 W PEAK (28V REGULATED)</span></span>
+        <span>BATTERY DOD: <span class="ticker-highlight">18% NOMINAL / 32% SAR BURST</span></span>
+        <span>NEXT AOS: <span class="ticker-highlight">SVALBARD GS (T-04:12)</span></span>
+        <span>EDGE-AI QUEUE: <span class="ticker-highlight">3 JOBS ACTIVE</span></span>
+        <span>CADENCE: <span class="ticker-highlight">1 SATELLITE / 6 DAYS FLIGHT-LINE</span></span>
+
+        <!-- Duplicated for continuous loop -->
+        <span><span class="ticker-green">● LINK: NOMINAL</span></span>
+        <span>SECURITY: <span class="ticker-highlight">AES-256-GCM (LOCKED)</span></span>
+        <span>ORBIT: <span class="ticker-highlight">520 KM SSO (97.5° INCLINATION)</span></span>
+        <span>VELOCITY: <span class="ticker-highlight">7.605 KM/S (94.9 MIN PERIOD)</span></span>
+        <span>X-BAND DOWNLINK: <span class="ticker-highlight">800 MBPS (DVB-S2X)</span></span>
+        <span>SOLAR BUS: <span class="ticker-highlight">640 W PEAK (28V REGULATED)</span></span>
+        <span>BATTERY DOD: <span class="ticker-highlight">18% NOMINAL / 32% SAR BURST</span></span>
+        <span>NEXT AOS: <span class="ticker-highlight">SVALBARD GS (T-04:12)</span></span>
+        <span>EDGE-AI QUEUE: <span class="ticker-highlight">3 JOBS ACTIVE</span></span>
+        <span>CADENCE: <span class="ticker-highlight">1 SATELLITE / 6 DAYS FLIGHT-LINE</span></span>
+    </div>
+</div>
+
+<!-- INTERACTIVE CONSTELLATION SIMULATOR MODAL -->
+<div id="simulator-modal">
+    <div class="simulator-content">
+        <div class="sim-header">
+            <div>
+                <span class="case-tag">AEROGRID MISSION SYNTHESIS ENGINE</span>
+                <h2 style="font-family: 'Magnetik', sans-serif; font-size: 28px; font-weight: 800; color: #fff; margin: 4px 0;">
+                    Sovereign Constellation Simulator
+                </h2>
+                <p style="color: #787A85; font-size: 13px; margin: 0;">Calculate exact fleet size, revisit latency, and guaranteed turnkey pricing.</p>
+            </div>
+            <button class="sim-close-btn" onclick="closeConstellationSimulator()">✕ CLOSE</button>
+        </div>
+
+        <div class="sim-grid">
+            <!-- Left Controls -->
+            <div>
+                <div class="sim-group">
+                    <label class="sim-label">Target Revisit Frequency</label>
+                    <select id="sim-revisit-select" class="sim-select" onchange="updateSimulation()">
+                        <option value="24h">24 Hours (Baseline Persistence · 1 Satellite)</option>
+                        <option value="6h">6 Hours (Regional Monitoring · 2 Satellites)</option>
+                        <option value="3h">3 Hours (Rapid Reconnaissance · 4 Satellites)</option>
+                        <option value="1h" selected>1 Hour (Tactical EEZ / Border Patrol · 12 Satellites)</option>
+                        <option value="30m">30 Minutes (Critical Early Warning · 24 Satellites)</option>
+                        <option value="15m">15 Minutes (Ultra-Persistence Swarm · 48 Satellites)</option>
+                    </select>
+                </div>
+
+                <div class="sim-group">
+                    <label class="sim-label">Modular Sensor Payloads</label>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: #fff;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="pay-opt" checked onchange="updateSimulation()">
+                            <span>HyperEye-V2 (0.5m Optical Multispectral)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="pay-sar" checked onchange="updateSimulation()">
+                            <span>Sentinel-SAR X1 (Synthetic Aperture Radar)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="pay-lwir" checked onchange="updateSimulation()">
+                            <span>ThermoScan-L3 (30m LWIR Thermal Radiometer)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="pay-ai" checked onchange="updateSimulation()">
+                            <span>NeuralCore-E2 (64 TOPS Edge-AI Engine)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="pay-d2c" onchange="updateSimulation()">
+                            <span>LinkMesh-D2C (Direct-to-Cell RF Mesh)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="sim-group">
+                    <label class="sim-label">Orbital Plane & Altitude</label>
+                    <select class="sim-select" id="sim-orbit-select" onchange="updateSimulation()">
+                        <option value="520">520 km Sun-Synchronous Orbit (97.5° SSO)</option>
+                        <option value="450">450 km Very Low Earth Orbit (VLEO)</option>
+                        <option value="inclined">500 km Mid-Inclination (45° Rapid Mid-Latitude)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right Results -->
+            <div>
+                <div class="sim-card-result">
+                    <span class="case-tag">GUARANTEED TURNKEY BUDGET</span>
+                    <div class="sim-big-stat" id="sim-result-cost">$38.4M</div>
+                    <div style="font-size: 13px; color: #787A85; margin-bottom: 16px;">
+                        All-in 5-Year Turnkey Cost for <span id="sim-result-sats" style="color: #fff; font-weight: 700;">12 Satellites</span>
+                    </div>
+
+                    <table class="sim-comparison-table">
+                        <tr>
+                            <th>METRIC</th>
+                            <th>AEROGRID OS</th>
+                            <th>LEGACY SPACE</th>
+                        </tr>
+                        <tr>
+                            <td>Unit Cost</td>
+                            <td style="color: #00A1FF; font-weight: 700;">$3.2M / Sat</td>
+                            <td>$38.0M / Sat</td>
+                        </tr>
+                        <tr>
+                            <td>Ground Segment</td>
+                            <td style="color: #00A1FF;">Included</td>
+                            <td>$25.0M NRE</td>
+                        </tr>
+                        <tr>
+                            <td>Total Program</td>
+                            <td style="color: #00FF88; font-weight: 700;" id="sim-table-aero">$38.4M</td>
+                            <td id="sim-table-legacy">$481.0M</td>
+                        </tr>
+                        <tr>
+                            <td>Total Savings</td>
+                            <td colspan="2" style="color: #00FF88; font-weight: 700;" id="sim-table-saved">$442.6M (92.0% Saved)</td>
+                        </tr>
+                        <tr>
+                            <td>Time to First Light</td>
+                            <td style="color: #00A1FF; font-weight: 700;">180 Days</td>
+                            <td>4–6 Years</td>
+                        </tr>
+                    </table>
+
+                    <div class="sim-cta-action">
+                        <button class="sim-btn-primary" onclick="exportMissionBrief()">
+                            DOWNLOAD MISSION BRIEFING (JSON)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Simulator Modal Controller
+    window.openConstellationSimulator = function() {
+        document.getElementById('simulator-modal').style.display = 'block';
+        updateSimulation();
+    };
+
+    window.closeConstellationSimulator = function() {
+        document.getElementById('simulator-modal').style.display = 'none';
+    };
+
+    const simTiers = {
+        '24h': { sats: 1, cost: 3.2, legacy: 63.0 },
+        '6h':  { sats: 2, cost: 6.4, legacy: 101.0 },
+        '3h':  { sats: 4, cost: 12.8, legacy: 177.0 },
+        '1h':  { sats: 12, cost: 38.4, legacy: 481.0 },
+        '30m': { sats: 24, cost: 76.8, legacy: 937.0 },
+        '15m': { sats: 48, cost: 153.6, legacy: 1849.0 }
+    };
+
+    window.updateSimulation = function() {
+        const revisitKey = document.getElementById('sim-revisit-select').value;
+        const tier = simTiers[revisitKey] || simTiers['1h'];
+        const savedAmount = (tier.legacy - tier.cost).toFixed(1);
+        const savedPercent = ((savedAmount / tier.legacy) * 100).toFixed(1);
+
+        document.getElementById('sim-result-cost').innerText = '
+</html> + tier.cost.toFixed(1) + 'M';
+        document.getElementById('sim-result-sats').innerText = tier.sats + ' Satellites';
+        document.getElementById('sim-table-aero').innerText = '
+</html> + tier.cost.toFixed(1) + 'M';
+        document.getElementById('sim-table-legacy').innerText = '
+</html> + tier.legacy.toFixed(1) + 'M';
+        document.getElementById('sim-table-saved').innerText = '
+</html> + savedAmount + 'M (' + savedPercent + '% Saved)';
+    };
+
+    window.exportMissionBrief = function() {
+        const revisitKey = document.getElementById('sim-revisit-select').value;
+        const tier = simTiers[revisitKey] || simTiers['1h'];
+        const orbit = document.getElementById('sim-orbit-select').value;
+        
+        const brief = {
+            project: "AeroGrid OS Mission Architecture",
+            timestamp: new Date().toISOString(),
+            missionParameters: {
+                targetRevisit: revisitKey,
+                orbitAltitudeKm: orbit,
+                constellationSize: tier.sats,
+                leadTimeToOrbitDays: 180,
+                pricingTurnkeyMillionsUSD: tier.cost,
+                legacyComparisonMillionsUSD: tier.legacy,
+                costReductionPercent: ((tier.legacy - tier.cost) / tier.legacy * 100).toFixed(1) + "%"
+            },
+            payloadManifest: [
+                document.getElementById('pay-opt').checked ? "HyperEye-V2 (0.5m Optical Multispectral)" : null,
+                document.getElementById('pay-sar').checked ? "Sentinel-SAR X1 (X-band 1m Radar)" : null,
+                document.getElementById('pay-lwir').checked ? "ThermoScan-L3 (30m LWIR Thermal)" : null,
+                document.getElementById('pay-ai').checked ? "NeuralCore-E2 (64 TOPS Edge-AI Engine)" : null,
+                document.getElementById('pay-d2c').checked ? "LinkMesh-D2C (Direct-to-Cell RF Mesh)" : null
+            ].filter(Boolean),
+            guarantee: "One price. Build, rideshare launch, ground network, 5 years operations. No change orders."
+        };
+
+        const blob = new Blob([JSON.stringify(brief, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'AeroGrid_Mission_Brief_' + revisitKey + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+</script>
+
 </body>
 </html>
