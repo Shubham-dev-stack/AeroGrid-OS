@@ -17,6 +17,8 @@
 import Link from 'next/link';
 import { memo, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import SoundToggle from '@/components/ui/SoundToggle';
+import { soundEngine } from '@/lib/soundEngine';
 import {
   ArrowLeft,
   Battery,
@@ -1610,6 +1612,7 @@ export default function DashboardPage() {
   const handleSubmitted = useCallback(
     (task: TaskingResponse) => {
       setLastTask(task);
+      soundEngine.playChirp();
       push('OK', `${task.taskId} SCHEDULED · ${task.request.payloadType} → ${task.request.aoiName.toUpperCase()} · PASS T+${task.schedule.estimatedPassInMinutes.toFixed(0)}m`);
     },
     [push],
@@ -1702,9 +1705,13 @@ export default function DashboardPage() {
             <span className={`h-1.5 w-1.5 rounded-full ${src.dot} ${source === 'LIVE' ? 'animate-pulse' : ''}`} aria-hidden />
             {src.label}
           </div>
+          <SoundToggle />
           <button
             type="button"
-            onClick={() => void refresh()}
+            onClick={() => {
+              soundEngine.playClick();
+              void refresh();
+            }}
             aria-label="Refresh data now"
             className="rounded-lg border border-white/12 p-1.5 text-white/60 transition-colors hover:border-[#00A1FF]/50 hover:text-[#00A1FF]"
           >
@@ -1748,7 +1755,10 @@ export default function DashboardPage() {
         )}
         <button
           type="button"
-          onClick={() => setModalOpen(true)}
+          onClick={() => {
+            soundEngine.playClick();
+            setModalOpen(true);
+          }}
           className="ml-auto flex items-center gap-2 rounded-lg border border-[#FC6A18]/60 bg-[#FC6A18]/15 px-4 py-2 font-mono text-xs font-bold tracking-[0.2em] text-[#FC6A18] shadow-[0_0_24px_rgba(252,106,24,0.15)] transition-colors hover:bg-[#FC6A18]/25"
         >
           <Send size={14} aria-hidden /> SUBMIT TASKING

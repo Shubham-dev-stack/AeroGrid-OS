@@ -21,6 +21,8 @@
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
+import SoundToggle from '@/components/ui/SoundToggle';
+import { soundEngine } from '@/lib/soundEngine';
 import {
   Aperture,
   ArrowLeft,
@@ -1867,16 +1869,23 @@ export default function PayloadsPage() {
   }, []);
 
   const toggle = useCallback((id: PayloadId) => {
+    soundEngine.playClick();
     setMounted((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
-      else next.add(id);
+      else {
+        soundEngine.playChirp();
+        next.add(id);
+      }
       return next;
     });
   }, []);
 
   const setMode = useCallback(
-    (m: string) => setModes((prev) => ({ ...prev, [selected]: m })),
+    (m: string) => {
+      soundEngine.playClick();
+      setModes((prev) => ({ ...prev, [selected]: m }));
+    },
     [selected],
   );
 
@@ -1915,6 +1924,7 @@ export default function PayloadsPage() {
           </div>
 
           <div className="ml-auto flex items-center gap-4" aria-label="Bus allocation">
+            <SoundToggle />
             <MiniMeter label="MASS" ratio={budget.ratios.mass} text={`${budget.massKg.toFixed(1)}/${LIMITS.massKg} kg`} />
             <MiniMeter label="PEAK PWR" ratio={budget.ratios.power} text={`${budget.powerW.toFixed(0)}/${LIMITS.peakPowerW} W`} />
             <MiniMeter label="VOLUME" ratio={budget.ratios.volume} text={`${budget.volumeU.toFixed(1)}/${LIMITS.volumeU}U`} />

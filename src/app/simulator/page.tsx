@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ChangeEvent } from 'react';
+import SoundToggle from '@/components/ui/SoundToggle';
+import { soundEngine } from '@/lib/soundEngine';
 import {
   ArrowLeft,
   ChevronRight,
@@ -311,6 +313,7 @@ export default function SimulatorPage() {
 
   /* Handlers & deliverables */
   const toggleSensor = (id: SensorId): void => {
+    soundEngine.playClick();
     setSensors((cur) => (cur.includes(id) ? (cur.length > 1 ? cur.filter((s) => s !== id) : cur) : [...cur, id]));
   };
   const setBox = (key: keyof Bbox) => (e: ChangeEvent<HTMLInputElement>): void => {
@@ -357,6 +360,7 @@ export default function SimulatorPage() {
   });
 
   const downloadBrief = (): void => {
+    soundEngine.playChirp();
     const blob = new Blob([JSON.stringify(buildBrief(), null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -369,6 +373,7 @@ export default function SimulatorPage() {
   };
 
   const stashFleet = (): void => {
+    soundEngine.playWarp();
     try { sessionStorage.setItem('aerogrid.fleetConfig', JSON.stringify(buildBrief())); } catch { /* storage unavailable */ }
   };
 
@@ -414,6 +419,7 @@ export default function SimulatorPage() {
           >
             <FileCode size={13} /> API Docs
           </Link>
+          <SoundToggle />
         </div>
       </nav>
 
@@ -439,7 +445,10 @@ export default function SimulatorPage() {
           <h2 className="ag-h">Fleet size <span className="ag-m" style={{ color: C.green }}>{fleet} sats</span></h2>
           <input
             className="ag-range" type="range" min={4} max={24} step={1} value={fleet}
-            aria-label="Target fleet size" onChange={(e) => setFleet(Number(e.target.value))}
+            aria-label="Target fleet size" onChange={(e) => {
+              soundEngine.playClick();
+              setFleet(Number(e.target.value));
+            }}
           />
           <div className="ag-s" style={{ marginBottom: 20 }}>
             Walker-Delta {fleet}/{planes}/1 · {planes} plane{planes > 1 ? 's' : ''} × {model.perPlane}
@@ -448,7 +457,10 @@ export default function SimulatorPage() {
           <h2 className="ag-h">Area of interest</h2>
           <div role="radiogroup" aria-label="Area of interest">
             {AOI_ORDER.map((id) => (
-              <button key={id} type="button" role="radio" aria-checked={aoiId === id} className="ag-opt" onClick={() => setAoiId(id)}>
+              <button key={id} type="button" role="radio" aria-checked={aoiId === id} className="ag-opt" onClick={() => {
+                soundEngine.playClick();
+                setAoiId(id);
+              }}>
                 <Crosshair size={16} color={aoiId === id ? C.green : C.cyan} aria-hidden />
                 <span>{AOI_MAP[id].name}<small>{AOI_MAP[id].domain}</small></span>
               </button>

@@ -340,6 +340,9 @@
         <a href="#case-studies" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Missions</a>
     </div>
     <div style="display: flex; gap: 12px; align-items: center;">
+        <button id="audio-toggle-btn" onclick="toggleAerogridAudio()" style="display: flex; align-items: center; gap: 6px; font-family: monospace; font-size: 11px; text-transform: uppercase; font-weight: 700; color: #787A85; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); padding: 7px 14px; border-radius: 9999px; cursor: pointer; transition: all 0.2s;">
+            <span id="audio-toggle-icon">🔇</span> <span id="audio-toggle-text">AUDIO: OFF</span>
+        </button>
         <a href="/dashboard" style="display: flex; align-items: center; gap: 6px; font-family: 'Magnetik', sans-serif; font-size: 12px; text-transform: uppercase; font-weight: 700; color: #00FF88; text-decoration: none; padding: 8px 16px; border-radius: 9999px; border: 1px solid rgba(0,255,136,0.35); background: rgba(0,255,136,0.08); backdrop-filter: blur(10px); transition: all 0.2s;" onmouseover="this.style.borderColor='#00FF88'; this.style.boxShadow='0 0 16px rgba(0,255,136,0.25)'" onmouseout="this.style.borderColor='rgba(0,255,136,0.35)'; this.style.boxShadow='none'">
             <span style="width: 6px; height: 6px; border-radius: 50%; background: #00FF88;"></span> Live HUD
         </a>
@@ -1393,15 +1396,11 @@ gform.initializeOnLoaded( function() {jQuery('#gform_ajax_frame_5').on('load',fu
         const savedAmount = (tier.legacy - tier.cost).toFixed(1);
         const savedPercent = ((savedAmount / tier.legacy) * 100).toFixed(1);
 
-        document.getElementById('sim-result-cost').innerText = '
-</html> + tier.cost.toFixed(1) + 'M';
+        document.getElementById('sim-result-cost').innerText = '$' + tier.cost.toFixed(1) + 'M';
         document.getElementById('sim-result-sats').innerText = tier.sats + ' Satellites';
-        document.getElementById('sim-table-aero').innerText = '
-</html> + tier.cost.toFixed(1) + 'M';
-        document.getElementById('sim-table-legacy').innerText = '
-</html> + tier.legacy.toFixed(1) + 'M';
-        document.getElementById('sim-table-saved').innerText = '
-</html> + savedAmount + 'M (' + savedPercent + '% Saved)';
+        document.getElementById('sim-table-aero').innerText = '$' + tier.cost.toFixed(1) + 'M';
+        document.getElementById('sim-table-legacy').innerText = '$' + tier.legacy.toFixed(1) + 'M';
+        document.getElementById('sim-table-saved').innerText = '$' + savedAmount + 'M (' + savedPercent + '% Saved)';
     };
 
     window.exportMissionBrief = function() {
@@ -1441,6 +1440,129 @@ gform.initializeOnLoaded( function() {jQuery('#gform_ajax_frame_5').on('load',fu
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     };
+
+    // AeroGrid Web Audio API Synthesizer
+    let audioCtx = null;
+    let audioMuted = true;
+    let ambientOsc = null;
+    let ambientGain = null;
+
+    function initAerogridAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    window.toggleAerogridAudio = function() {
+        initAerogridAudio();
+        audioMuted = !audioMuted;
+        localStorage.setItem('aerogrid_audio_muted', audioMuted ? 'true' : 'false');
+        const btn = document.getElementById('audio-toggle-btn');
+        const icon = document.getElementById('audio-toggle-icon');
+        const text = document.getElementById('audio-toggle-text');
+        if (!audioMuted) {
+            if (btn) {
+                btn.style.borderColor = 'rgba(0, 255, 136, 0.4)';
+                btn.style.color = '#00FF88';
+                btn.style.background = 'rgba(0, 255, 136, 0.1)';
+                btn.style.boxShadow = '0 0 15px rgba(0, 255, 136, 0.2)';
+            }
+            if (icon) icon.textContent = '🔊';
+            if (text) text.textContent = 'AUDIO: ON';
+            playAerogridChirp();
+            startSpaceDrone();
+        } else {
+            if (btn) {
+                btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+                btn.style.color = '#787A85';
+                btn.style.background = 'rgba(255, 255, 255, 0.05)';
+                btn.style.boxShadow = 'none';
+            }
+            if (icon) icon.textContent = '🔇';
+            if (text) text.textContent = 'AUDIO: OFF';
+            stopSpaceDrone();
+        }
+    };
+
+    window.playAerogridClick = function() {
+        if (audioMuted || !audioCtx) return;
+        try {
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(950, t);
+            osc.frequency.exponentialRampToValueAtTime(320, t + 0.035);
+            gain.gain.setValueAtTime(0.08, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.035);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(t);
+            osc.stop(t + 0.04);
+        } catch(e) {}
+    };
+
+    window.playAerogridChirp = function() {
+        if (audioMuted || !audioCtx) return;
+        try {
+            const t = audioCtx.currentTime;
+            const osc1 = audioCtx.createOscillator();
+            const osc2 = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc1.type = 'triangle';
+            osc1.frequency.setValueAtTime(1240, t);
+            osc1.frequency.exponentialRampToValueAtTime(1860, t + 0.08);
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(1860, t);
+            osc2.frequency.exponentialRampToValueAtTime(2480, t + 0.08);
+            gain.gain.setValueAtTime(0.06, t);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+            osc1.connect(gain);
+            osc2.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc1.start(t);
+            osc2.start(t);
+            osc1.stop(t + 0.09);
+            osc2.stop(t + 0.09);
+        } catch(e) {}
+    };
+
+    function startSpaceDrone() {
+        if (audioMuted || !audioCtx || ambientOsc) return;
+        try {
+            const t = audioCtx.currentTime;
+            ambientGain = audioCtx.createGain();
+            ambientGain.gain.setValueAtTime(0.001, t);
+            ambientGain.gain.exponentialRampToValueAtTime(0.025, t + 1.5);
+            ambientOsc = audioCtx.createOscillator();
+            ambientOsc.type = 'sine';
+            ambientOsc.frequency.setValueAtTime(55, t);
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(200, t);
+            ambientOsc.connect(filter);
+            filter.connect(ambientGain);
+            ambientGain.connect(audioCtx.destination);
+            ambientOsc.start(t);
+        } catch(e) {}
+    }
+
+    function stopSpaceDrone() {
+        if (ambientOsc && audioCtx && ambientGain) {
+            try {
+                ambientGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+                setTimeout(() => {
+                    if (ambientOsc) {
+                        ambientOsc.stop();
+                        ambientOsc = null;
+                    }
+                }, 300);
+            } catch(e) { ambientOsc = null; }
+        }
+    }
 </script>
 
 </body>

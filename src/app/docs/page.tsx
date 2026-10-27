@@ -7,6 +7,8 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import SoundToggle from '@/components/ui/SoundToggle';
+import { soundEngine } from '@/lib/soundEngine';
 import {
   ArrowLeft,
   Terminal,
@@ -252,6 +254,7 @@ export default function DocsPage() {
 
   // Run live endpoint test against actual local Next.js server
   const runLiveTest = async () => {
+    soundEngine.playClick();
     setIsRunning(true);
     setLiveResponse(null);
     setStatusCode(null);
@@ -266,6 +269,7 @@ export default function DocsPage() {
         setStatusCode(res.status);
         setLatencyMs(Math.round(t1 - t0));
         setLiveResponse(data);
+        soundEngine.playChirp();
       } else {
         const res = await fetch(activeDoc.path, {
           method: 'POST',
@@ -277,8 +281,10 @@ export default function DocsPage() {
         setStatusCode(res.status);
         setLatencyMs(Math.round(t1 - t0));
         setLiveResponse(data);
+        soundEngine.playChirp();
       }
     } catch (err: any) {
+      soundEngine.playAlert();
       const t1 = performance.now();
       setStatusCode(500);
       setLatencyMs(Math.round(t1 - t0));
@@ -365,6 +371,7 @@ AG-06: LinkMesh-D2C      [HEALTHY]     AOI: North Sea Grid`;
         </div>
 
         <div className="flex items-center gap-3">
+          <SoundToggle />
           <Link
             href="/dashboard"
             className="flex items-center gap-2 text-xs font-mono uppercase bg-[#00FF88]/10 text-[#00FF88] border border-[#00FF88]/40 hover:bg-[#00FF88]/20 transition-all px-3 py-1.5 rounded-full"
