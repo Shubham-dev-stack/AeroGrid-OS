@@ -1312,13 +1312,22 @@ interface TaskingModalProps {
   open: boolean;
   onClose: () => void;
   onSubmitted: (task: TaskingResponse) => void;
+  initialPayload?: string | null;
 }
 
-function TaskingModal({ open, onClose, onSubmitted }: TaskingModalProps) {
+function TaskingModal({ open, onClose, onSubmitted, initialPayload }: TaskingModalProps) {
   const uid = useId();
   const [aoiName, setAoiName] = useState<string>(AOIS[0].name);
   const [payloadType, setPayloadType] = useState<PayloadType>('Sentinel-SAR X1');
   const [priority, setPriority] = useState<Priority>('URGENT_TACTICAL');
+
+  useEffect(() => {
+    if (!initialPayload) return;
+    if (initialPayload.includes('hypereye')) setPayloadType('HyperEye-V2');
+    else if (initialPayload.includes('sar')) setPayloadType('Sentinel-SAR X1');
+    else if (initialPayload.includes('thermo')) setPayloadType('ThermoScan-L3');
+    else if (initialPayload.includes('neural')) setPayloadType('NeuralCore-E2');
+  }, [initialPayload]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<{ message: string; details: string[] } | null>(null);
   const [result, setResult] = useState<TaskingResponse | null>(null);
@@ -1594,6 +1603,7 @@ export default function DashboardPage() {
   const { telemetry, constellation, source, syncing, refresh } = useMissionData();
   const { lines, push } = useOpsLog();
   const [modalOpen, setModalOpen] = useState(false);
+  const [initialPayload, setInitialPayload] = useState<string | null>(null);
   const [lastTask, setLastTask] = useState<TaskingResponse | null>(null);
 
   const closeModal = useCallback(() => setModalOpen(false), []);
@@ -1608,6 +1618,16 @@ export default function DashboardPage() {
   useEffect(() => {
     document.title = 'AeroGrid OS · Mission Control';
     push('INFO', 'MISSION CONTROL ONLINE · ESTABLISHING TELEMETRY LINK');
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const payloadsParam = params.get('payloads');
+      if (payloadsParam) {
+        setInitialPayload(payloadsParam);
+        setModalOpen(true);
+        push('INFO', `CONFIG UPLINK: PRE-LOADED SENSOR PAYLOADS [${payloadsParam.toUpperCase()}]`);
+      }
+    }
   }, [push]);
 
   // Log data-source transitions.
@@ -1735,7 +1755,7 @@ export default function DashboardPage() {
         </button>
       </footer>
 
-      <TaskingModal open={modalOpen} onClose={closeModal} onSubmitted={handleSubmitted} />
+      <TaskingModal open={modalOpen} onClose={closeModal} onSubmitted={handleSubmitted} initialPayload={initialPayload} />
     </div>
   );
 }
