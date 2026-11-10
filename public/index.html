@@ -340,6 +340,9 @@
         <a href="#case-studies" style="color: #787A85; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#00A1FF'" onmouseout="this.style.color='#787A85'">Missions</a>
     </div>
     <div style="display: flex; gap: 12px; align-items: center;">
+        <button id="cmd-k-btn" onclick="openAerogridPalette()" title="Tactical Command Palette (Cmd+K / Ctrl+K)" style="display: flex; align-items: center; gap: 5px; font-family: monospace; font-size: 11px; color: #787A85; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); padding: 7px 12px; border-radius: 9999px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#00A1FF'; this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.color='#787A85'">
+            <span style="color: #00A1FF; font-weight: bold;">⌘K</span>
+        </button>
         <button id="audio-toggle-btn" onclick="toggleAerogridAudio()" style="display: flex; align-items: center; gap: 6px; font-family: monospace; font-size: 11px; text-transform: uppercase; font-weight: 700; color: #787A85; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); padding: 7px 14px; border-radius: 9999px; cursor: pointer; transition: all 0.2s;">
             <span id="audio-toggle-icon">🔇</span> <span id="audio-toggle-text">AUDIO: OFF</span>
         </button>
@@ -1563,7 +1566,200 @@ gform.initializeOnLoaded( function() {jQuery('#gform_ajax_frame_5').on('load',fu
             } catch(e) { ambientOsc = null; }
         }
     }
+
+    /* Command Palette Controller */
+    let paletteActiveIdx = 0;
+
+    function getVisiblePaletteItems() {
+        return Array.from(document.querySelectorAll('.palette-item')).filter(el => el.style.display !== 'none');
+    }
+
+    function highlightPaletteItem(idx) {
+        const visible = getVisiblePaletteItems();
+        visible.forEach((el, i) => {
+            el.style.background = i === idx ? 'rgba(0,161,255,0.16)' : 'transparent';
+            el.style.borderColor = i === idx ? 'rgba(0,161,255,0.45)' : 'transparent';
+        });
+    }
+
+    window.openAerogridPalette = function() {
+        playAerogridClick();
+        const p = document.getElementById('aerogrid-palette-overlay');
+        if (p) {
+            p.style.display = 'flex';
+            const input = document.getElementById('palette-input');
+            if (input) {
+                input.value = '';
+                filterPaletteItems('');
+                setTimeout(() => input.focus(), 50);
+            }
+        }
+    };
+
+    window.closeAerogridPalette = function() {
+        const p = document.getElementById('aerogrid-palette-overlay');
+        if (p) p.style.display = 'none';
+    };
+
+    window.filterPaletteItems = function(q) {
+        const term = q.toLowerCase();
+        const items = document.querySelectorAll('.palette-item');
+        items.forEach(el => {
+            const text = el.getAttribute('data-search') || '';
+            el.style.display = (!term || text.includes(term)) ? 'flex' : 'none';
+        });
+        paletteActiveIdx = 0;
+        highlightPaletteItem(0);
+    };
+
+    window.openPassPredictorFromIframe = function() {
+        closeAerogridPalette();
+        playAerogridChirp();
+        try {
+            const targetWin = (window.parent && window.parent !== window) ? window.parent : window;
+            targetWin.dispatchEvent(new CustomEvent('aerogrid:open-pass-predictor'));
+        } catch(e) {}
+    };
+
+    window.exportSovereignEphemeris = function() {
+        closeAerogridPalette();
+        playAerogridChirp();
+        const ephemeris = {
+            constellation: 'AeroGrid Sovereign Constellation',
+            generatedAt: new Date().toISOString(),
+            deliverySlaDays: 180,
+            turnkeyCostPerSatelliteUsdMillions: 3.2,
+            orbit: { regime: '520 km SSO', altitudeKm: 520, inclinationDeg: 97.5, periodMin: 94.9, velocityKmS: 7.605, planes: 4, satellitesPerPlane: 3, totalSatellites: 12 },
+            groundStations: ['Svalbard SvalSat (78.2N)', 'Inuvik (68.4N)', 'Punta Arenas (53.2S)', 'Troll Antarctica (72.0S)', 'Awarua (46.5S)']
+        };
+        const blob = new Blob([JSON.stringify(ephemeris, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `aerogrid_sovereign_ephemeris_${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    window.addEventListener('keydown', function(e) {
+        const p = document.getElementById('aerogrid-palette-overlay');
+        const isOpen = p && p.style.display === 'flex';
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+            e.preventDefault();
+            if (isOpen) closeAerogridPalette();
+            else openAerogridPalette();
+        } else if (e.key === 'Escape' && isOpen) {
+            closeAerogridPalette();
+        } else if (isOpen && (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter')) {
+            const visible = getVisiblePaletteItems();
+            if (!visible.length) return;
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                playAerogridClick();
+                paletteActiveIdx = (paletteActiveIdx + 1) % visible.length;
+                highlightPaletteItem(paletteActiveIdx);
+                visible[paletteActiveIdx].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                playAerogridClick();
+                paletteActiveIdx = (paletteActiveIdx - 1 + visible.length) % visible.length;
+                highlightPaletteItem(paletteActiveIdx);
+                visible[paletteActiveIdx].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                playAerogridChirp();
+                visible[paletteActiveIdx].click();
+            }
+        }
+    });
 </script>
+
+<!-- TACTICAL COMMAND PALETTE MODAL OVERLAY -->
+<div id="aerogrid-palette-overlay" onclick="closeAerogridPalette()" style="display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); justify-content: center; align-items: flex-start; padding-top: 100px;">
+    <div onclick="event.stopPropagation()" style="width: 100%; max-width: 640px; background: #080D17; border: 1px solid rgba(0, 161, 255, 0.45); border-radius: 16px; box-shadow: 0 0 50px rgba(0, 161, 255, 0.25); overflow: hidden; display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02);">
+            <span style="color: #00A1FF; font-size: 16px;">🔍</span>
+            <input id="palette-input" oninput="filterPaletteItems(this.value)" type="text" placeholder="Search routes, 520 km SSO payloads, or tactical actions..." style="flex: 1; background: transparent; border: none; color: #fff; font-family: monospace; font-size: 14px; outline: none;">
+            <span style="font-family: monospace; font-size: 10px; color: #787A85; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 4px;">ESC</span>
+        </div>
+        <div id="palette-list" style="max-height: 390px; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 2px;">
+            <a href="/dashboard" target="_top" class="palette-item" data-search="mission control dashboard telemetry live hud fleet ag-01 sso" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; border: 1px solid transparent; text-decoration: none; color: #fff; transition: background 0.15s;" onmouseover="this.style.background='rgba(0,161,255,0.15)'" onmouseout="this.style.background='transparent'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 17px;">🛰</span>
+                    <div>
+                        <div style="font-family: 'Magnetik', sans-serif; font-weight: 700; font-size: 14px;">Mission Control Dashboard</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #787A85;">Live telemetry (520 km SSO), ground track & AES-256 tasking</div>
+                    </div>
+                </div>
+                <span style="font-family: monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(0,255,136,0.15); color: #00FF88; border: 1px solid rgba(0,255,136,0.3);">LIVE HUD</span>
+            </a>
+            <a href="/simulator" target="_top" class="palette-item" data-search="walker delta orbit simulator constellation coverage planes" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; border: 1px solid transparent; text-decoration: none; color: #fff; transition: background 0.15s;" onmouseover="this.style.background='rgba(0,161,255,0.15)'" onmouseout="this.style.background='transparent'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 17px;">⚡</span>
+                    <div>
+                        <div style="font-family: 'Magnetik', sans-serif; font-weight: 700; font-size: 14px;">Walker-Delta Orbit Synthesizer</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #787A85;">Constellation plane optimization & revisit solver (T_rev ≈ 24h / N·k)</div>
+                    </div>
+                </div>
+                <span style="font-family: monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(0,161,255,0.15); color: #00A1FF; border: 1px solid rgba(0,161,255,0.3);">SIMULATOR</span>
+            </a>
+            <a href="/payloads" target="_top" class="palette-item" data-search="payloads hypereye thermoscan sentinel sar neuralcore linkmesh bus 16u" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; border: 1px solid transparent; text-decoration: none; color: #fff; transition: background 0.15s;" onmouseover="this.style.background='rgba(0,161,255,0.15)'" onmouseout="this.style.background='transparent'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 17px;">📷</span>
+                    <div>
+                        <div style="font-family: 'Magnetik', sans-serif; font-weight: 700; font-size: 14px;">Modular Sensor Payloads (5 Modules)</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #787A85;">HyperEye-V2, ThermoScan-L3, Sentinel-SAR X1, NeuralCore-E2, LinkMesh-D2C</div>
+                    </div>
+                </div>
+                <span style="font-family: monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);">CATALOG</span>
+            </a>
+            <a href="/docs" target="_top" class="palette-item" data-search="api docs developer curl sdk endpoints telemetry grpc" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; border: 1px solid transparent; text-decoration: none; color: #fff; transition: background 0.15s;" onmouseover="this.style.background='rgba(0,161,255,0.15)'" onmouseout="this.style.background='transparent'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 17px;">📄</span>
+                    <div>
+                        <div style="font-family: 'Magnetik', sans-serif; font-weight: 700; font-size: 14px;">Aerospace API Suite & Docs</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #787A85;">REST / gRPC telemetry schemas & live endpoint sandbox</div>
+                    </div>
+                </div>
+                <span style="font-family: monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);">API DOCS</span>
+            </a>
+            <div onclick="openPassPredictorFromIframe()" class="palette-item" data-search="pass predictor orbital ground station svalsatt inuvik punta arenas troll awarua aos rf" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; color: #fff; transition: background 0.15s;" onmouseover="this.style.background='rgba(0,161,255,0.15)'" onmouseout="this.style.background='transparent'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 17px;">📡</span>
+                    <div>
+                        <div style="font-family: 'Magnetik', sans-serif; font-weight: 700; font-size: 14px;">Open Orbital Pass Predictor</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #787A85;">Live AOS countdowns for SvalSat, Inuvik, Punta Arenas, Troll & Awarua</div>
+                    </div>
+                </div>
+                <span style="font-family: monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(0,161,255,0.15); color: #00A1FF; border: 1px solid rgba(0,161,255,0.3);">RF RADAR</span>
+            </div>
+            <div onclick="exportSovereignEphemeris()" class="palette-item" data-search="export download ephemeris json 520km orbit manifest" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; color: #fff; transition: background 0.15s;" onmouseover="this.style.background='rgba(0,161,255,0.15)'" onmouseout="this.style.background='transparent'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 17px;">📦</span>
+                    <div>
+                        <div style="font-family: 'Magnetik', sans-serif; font-weight: 700; font-size: 14px;">Export Sovereign Ephemeris (JSON)</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #787A85;">Download 520 km SSO parameters & 5-station ground manifest</div>
+                    </div>
+                </div>
+                <span style="font-family: monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2);">JSON</span>
+            </div>
+            <div onclick="closeAerogridPalette(); toggleAerogridAudio();" class="palette-item" data-search="audio sound mute cybernetic drone effects" style="display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; color: #fff; transition: background 0.15s;" onmouseover="this.style.background='rgba(0,161,255,0.15)'" onmouseout="this.style.background='transparent'">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 17px;">🔊</span>
+                    <div>
+                        <div style="font-family: 'Magnetik', sans-serif; font-weight: 700; font-size: 14px;">Toggle Cybernetic Audio Engine</div>
+                        <div style="font-family: monospace; font-size: 11px; color: #787A85;">Enable/disable tactical telemetry chirps & ambient space drone</div>
+                    </div>
+                </div>
+                <span style="font-family: monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; background: rgba(0,255,136,0.15); color: #00FF88; border: 1px solid rgba(0,255,136,0.3);">AUDIO</span>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.5); font-family: monospace; font-size: 11px; color: #787A85;">
+            <span>Shortcuts: <strong>↑↓</strong> Nav · <strong>↵</strong> Run · <strong>ESC</strong> Close</span>
+            <span style="color: #00A1FF; font-weight: bold;">520 KM SSO · AEROGRID OS</span>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

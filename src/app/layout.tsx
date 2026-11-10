@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { projectConfig } from "@/config/projectConfig";
+import CommandPalette from "@/components/hud/CommandPalette";
 
 const sans = Inter({
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function RootLayout({
         className="min-h-screen bg-black text-white font-sans antialiased selection:bg-aerogrid-cyan/30 selection:text-aerogrid-glow"
         style={{ margin: 0, padding: 0, overflowX: "hidden", backgroundColor: "#000" }}
       >
+        <CommandPalette />
         {children}
       </body>
     </html>
