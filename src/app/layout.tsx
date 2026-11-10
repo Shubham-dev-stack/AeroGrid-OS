@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { projectConfig } from "@/config/projectConfig";
 import CommandPalette from "@/components/hud/CommandPalette";
+import PassPredictorDrawer from "@/components/hud/PassPredictorDrawer";
 
 const sans = Inter({
   subsets: ["latin"],
@@ -49,6 +50,7 @@ export default function RootLayout({
         style={{ margin: 0, padding: 0, overflowX: "hidden", backgroundColor: "#000" }}
       >
         <CommandPalette />
+        <PassPredictorDrawer />
         {children}
       </body>
     </html>

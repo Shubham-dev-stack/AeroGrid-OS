@@ -812,14 +812,19 @@ function AosPill({ tel }: { tel: TelemetryResponse | null }) {
   }
 
   return (
-    <div
-      className={`flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[11px] font-semibold tracking-wider ${
-        active ? 'border-[#00A1FF]/60 bg-[#00A1FF]/15 text-[#00A1FF]' : 'border-[#FC6A18]/40 bg-[#FC6A18]/10 text-[#FC6A18]'
+    <button
+      type="button"
+      onClick={() => window.dispatchEvent(new CustomEvent('aerogrid:open-pass-predictor'))}
+      title="Open 12-hour Orbital Pass Predictor"
+      className={`flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[11px] font-semibold tracking-wider transition-all cursor-pointer ${
+        active
+          ? 'border-[#00A1FF]/60 bg-[#00A1FF]/15 text-[#00A1FF] hover:bg-[#00A1FF]/25'
+          : 'border-[#FC6A18]/40 bg-[#FC6A18]/10 text-[#FC6A18] hover:border-[#FC6A18]/75 hover:bg-[#FC6A18]/20'
       }`}
     >
       <Radio size={13} className={active ? 'animate-pulse' : ''} aria-hidden />
       <span className="tabular-nums">{text}</span>
-    </div>
+    </button>
   );
 }
 
